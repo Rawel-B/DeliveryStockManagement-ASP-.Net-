@@ -1,7 +1,11 @@
-﻿namespace DSM.Models {
+using System.ComponentModel.DataAnnotations;
+
+namespace DSM.Models {
     public class SupportTicket {
         public int Id { get; set; }
+        [StringLength(120, MinimumLength = 3)]
         public string? Subject { get; set; }
+        [StringLength(2000, MinimumLength = 10)]
         public string? Description { get; set; }
         public Category Category { get; set; } = Category.operations;
         public Priority Priority { get; set; } = Priority.normal;
@@ -13,7 +17,6 @@
         public string? AssignedUserName { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
-
     }
 
     public enum Category {
@@ -24,17 +27,18 @@
         access,
         accountActivation
     }
+
     public enum Priority {
         low,
         normal,
         high,
         urgent
     }
+
     public enum Status {
         open,
         inProgress,
         resolved,
         closed
     }
-
 }

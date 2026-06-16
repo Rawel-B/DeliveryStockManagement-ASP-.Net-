@@ -1,6 +1,9 @@
 @{
     var controller = (ViewContext.RouteData.Values["controller"]?.ToString() ?? "").ToLowerInvariant();
     string Active(string name) => controller == name.ToLowerInvariant() ? " active" : "";
+    var displayName = User.FindFirst("DisplayName")?.Value ?? User.Identity?.Name ?? "Profile";
+    var userRole = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value ?? "";
+    var userEmail = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value ?? "";
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -105,7 +108,33 @@
                     <h1>@ViewData["Title"]</h1>
                 </div>
                 <div class="header-actions">
-                    <span class="account-button" aria-label="Profile"><i class="pi pi-user"></i></span>
+                    @if (User.Identity?.IsAuthenticated == true) {
+                        <div class="account-menu">
+                            <a class="account-button" href="/Profile" aria-label="Open profile" data-tooltip="Profile">
+                                <i class="pi pi-user"></i>
+                            </a>
+                            <section class="account-dropdown" aria-label="Profile menu">
+                                <div class="account-dropdown-head">
+                                    <span class="profile-avatar small-profile-avatar"><i class="pi pi-user"></i></span>
+                                    <div>
+                                        <strong>@displayName</strong>
+                                        <span class="account-role">@userRole</span>
+                                        <small>@User.Identity.Name</small>
+                                        <small>@userEmail</small>
+                                    </div>
+                                </div>
+                                <a href="/Profile">
+                                    <i class="pi pi-user-edit"></i>
+                                    <span>Profile</span>
+                                </a>
+                            </section>
+                        </div>
+                        <a class="signout-button" href="/Auth/SignOut" aria-label="Sign out" data-tooltip="Sign out">
+                            <i class="pi pi-sign-out"></i>
+                        </a>
+                    } else {
+                        <a class="primary-button compact-header-button" href="/Auth/SignIn">Sign in</a>
+                    }
                 </div>
             </header>
 

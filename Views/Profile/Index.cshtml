@@ -1,0 +1,82 @@
+@model DSM.ViewModels.ProfileViewModel
+@{
+    ViewData["Title"] = "Profile";
+}
+
+<section class="profile-page">
+    <article class="profile-card">
+        <div class="profile-overview">
+            <span class="profile-avatar"><i class="pi @Model.ProfileIcon"></i></span>
+            <div>
+                <h2>@Model.Name</h2>
+                <p>@Model.Username</p>
+            </div>
+        </div>
+        <div class="profile-meta-grid">
+            <div>
+                <span>Role</span>
+                <strong>@Model.Role</strong>
+            </div>
+            <div>
+                <span>Email</span>
+                <strong>@Model.Email</strong>
+            </div>
+        </div>
+    </article>
+
+    <form asp-action="Index" method="post" class="profile-form profile-editor" novalidate>
+        <div class="profile-head">
+            <div>
+                <span>Account</span>
+                <h2>Edit profile</h2>
+            </div>
+        </div>
+
+        @if (TempData["ProfileMessage"] != null) {
+            <p class="form-success">@TempData["ProfileMessage"]</p>
+        }
+
+        <div asp-validation-summary="ModelOnly" class="form-error"></div>
+        <input asp-for="Id" type="hidden" />
+        <input asp-for="Role" type="hidden" />
+        <input asp-for="IsActive" type="hidden" />
+        <input asp-for="ProfileIcon" type="hidden" />
+
+        <label>
+            <span>Name</span>
+            <input asp-for="Name" required />
+        </label>
+        <span asp-validation-for="Name" class="field-error"></span>
+
+        <label>
+            <span>Username</span>
+            <input asp-for="Username" required />
+        </label>
+        <span asp-validation-for="Username" class="field-error"></span>
+
+        <label>
+            <span>Email</span>
+            <input asp-for="Email" required />
+        </label>
+        <span asp-validation-for="Email" class="field-error"></span>
+
+        <label>
+            <span>New password</span>
+            <input asp-for="Password" />
+        </label>
+        <span asp-validation-for="Password" class="field-error"></span>
+
+        <div class="icon-picker">
+            <span>Icon</span>
+            <div>
+                <button class="icon-button active-icon" type="button"><i class="pi @Model.ProfileIcon"></i></button>
+            </div>
+        </div>
+
+        <button class="primary-button" type="submit">Save profile</button>
+    </form>
+</section>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

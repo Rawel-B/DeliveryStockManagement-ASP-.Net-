@@ -1,0 +1,58 @@
+@model DSM.ViewModels.SignUpViewModel
+@{
+    ViewData["Title"] = "Sign up";
+    Layout = "_AuthLayout";
+}
+
+<main class="auth-page">
+    <section class="auth-intro" aria-label="DSM">
+        <div class="logo-showcase">
+            <img class="brand-logo showcase-brand-logo" src="~/logo-mark.svg" alt="Delivery Stock Management" />
+        </div>
+    </section>
+
+    <section class="auth-card" aria-label="Sign up form">
+        <div class="auth-card-header">
+            <h2>Sign up</h2>
+        </div>
+
+        <form asp-action="SignUp" method="post" class="auth-form" novalidate>
+            <label>
+                <span>Name</span>
+                <input asp-for="Name" autocomplete="name" />
+            </label>
+            <span asp-validation-for="Name" class="field-error"></span>
+
+            <label>
+                <span>Email</span>
+                <input asp-for="Email" autocomplete="email" />
+            </label>
+            <span asp-validation-for="Email" class="field-error"></span>
+
+            <label>
+                <span>Username</span>
+                <input asp-for="Username" autocomplete="username" />
+            </label>
+            <span asp-validation-for="Username" class="field-error"></span>
+
+            <label>
+                <span>Password</span>
+                <input asp-for="Password" autocomplete="new-password" />
+            </label>
+            <span asp-validation-for="Password" class="field-error"></span>
+
+            <div asp-validation-summary="ModelOnly" class="form-error"></div>
+            @if (TempData["AuthMessage"] != null) {
+                <p class="form-success">@TempData["AuthMessage"]</p>
+            }
+
+            <button class="primary-button" type="submit">Create account</button>
+        </form>
+
+        <p class="auth-switch">Already have an account? <a asp-action="SignIn">Sign in</a></p>
+    </section>
+</main>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

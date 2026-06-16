@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DSM.Models {
@@ -6,6 +6,7 @@ namespace DSM.Models {
         public int Id { get; set; }
         [Required(ErrorMessage = "the order must be specified.")]
         public int OrderId { get; set; }
+        public Order? Order { get; set; }
         [Required(ErrorMessage = "the product is mandatory.")]
         public string ProductName { get; set; } = string.Empty;
         public string? ProductRef { get; set; }
@@ -22,6 +23,5 @@ namespace DSM.Models {
         public void CalculateSubTotal() {
             SubTotal = PricePerUnit * Quantity;
         }
-
     }
 }

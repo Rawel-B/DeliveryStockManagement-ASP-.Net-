@@ -1,9 +1,10 @@
-
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DSM.Models;
 using DSM.Data;
 
+[Authorize]
 public class SupplierController : Controller {
     private readonly ApplicationDatabaseContext _context;
 
@@ -12,8 +13,25 @@ public class SupplierController : Controller {
     }
 
     // GET: SUPPLIERS
-    public async Task<IActionResult> Index() {
-        return View(await _context.Suppliers.ToListAsync());
+    public async Task<IActionResult> Index(string? criteria, bool? isActive, string? status) {
+        var suppliers = _context.Suppliers.AsQueryable();
+        if (!string.IsNullOrWhiteSpace(criteria)) {
+            string value = criteria.Trim();
+            suppliers = suppliers.Where(s => s.Name.Contains(value) || (s.Email != null && s.Email.Contains(value)) || (s.Phone != null && s.Phone.Contains(value)));
+        }
+        if (isActive == true || status == "active") {
+            suppliers = suppliers.Where(s => s.IsActive);
+        }
+        if (status == "inactive") {
+            suppliers = suppliers.Where(s => !s.IsActive);
+        }
+        var list = await suppliers.OrderBy(s => s.Name).ToListAsync();
+        foreach (var supplier in list) {
+            supplier.OrdersCount = await _context.Orders.CountAsync(o => o.SupplierId == supplier.Id);
+        }
+        ViewBag.Criteria = criteria;
+        ViewBag.Status = status;
+        return View(list);
     }
 
     // GET: SUPPLIERS/Details/5
@@ -22,12 +40,11 @@ public class SupplierController : Controller {
             return NotFound();
         }
 
-        var supplier = await _context.Suppliers
-            .FirstOrDefaultAsync(m => m.Id == id);
+        var supplier = await _context.Suppliers.FirstOrDefaultAsync(m => m.Id == id);
         if (supplier == null) {
             return NotFound();
         }
-
+        supplier.OrdersCount = await _context.Orders.CountAsync(o => o.SupplierId == supplier.Id);
         return View(supplier);
     }
 
@@ -42,7 +59,15 @@ public class SupplierController : Controller {
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create([Bind("Id,Name,Email,Phone,Address,IsActive,CreatedAt,UpdatedAt")] Supplier supplier) {
+        supplier.Email = DsmControllerUtilities.CleanNullable(supplier.Email)?.ToLowerInvariant();
+        if (!string.IsNullOrWhiteSpace(supplier.Email) && await _context.Suppliers.AnyAsync(s => s.Email == supplier.Email)) {
+            ModelState.AddModelError(nameof(supplier.Email), "a Supplier With This Email Already Exists.");
+        }
         if (ModelState.IsValid) {
+            supplier.Name = DsmControllerUtilities.Clean(supplier.Name);
+            supplier.Phone = DsmControllerUtilities.CleanNullable(supplier.Phone);
+            supplier.Address = DsmControllerUtilities.CleanNullable(supplier.Address);
+            DsmControllerUtilities.StampNew(supplier);
             _context.Add(supplier);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
@@ -73,8 +98,17 @@ public class SupplierController : Controller {
             return NotFound();
         }
 
+        supplier.Email = DsmControllerUtilities.CleanNullable(supplier.Email)?.ToLowerInvariant();
+        if (!string.IsNullOrWhiteSpace(supplier.Email) && await _context.Suppliers.AnyAsync(s => s.Id != supplier.Id && s.Email == supplier.Email)) {
+            ModelState.AddModelError(nameof(supplier.Email), "a Supplier With This Email Already Exists.");
+        }
+
         if (ModelState.IsValid) {
             try {
+                supplier.Name = DsmControllerUtilities.Clean(supplier.Name);
+                supplier.Phone = DsmControllerUtilities.CleanNullable(supplier.Phone);
+                supplier.Address = DsmControllerUtilities.CleanNullable(supplier.Address);
+                DsmControllerUtilities.StampUpdate(supplier);
                 _context.Update(supplier);
                 await _context.SaveChangesAsync();
             } catch (DbUpdateConcurrencyException) {
@@ -95,12 +129,10 @@ public class SupplierController : Controller {
             return NotFound();
         }
 
-        var supplier = await _context.Suppliers
-            .FirstOrDefaultAsync(m => m.Id == id);
+        var supplier = await _context.Suppliers.FirstOrDefaultAsync(m => m.Id == id);
         if (supplier == null) {
             return NotFound();
         }
-
         return View(supplier);
     }
 

@@ -1,9 +1,10 @@
-
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DSM.Models;
 using DSM.Data;
 
+[Authorize]
 public class LocationController : Controller {
     private readonly ApplicationDatabaseContext _context;
 
@@ -12,8 +13,18 @@ public class LocationController : Controller {
     }
 
     // GET: LOCATIONS
-    public async Task<IActionResult> Index() {
-        return View(await _context.Locations.ToListAsync());
+    public async Task<IActionResult> Index(string? criteria) {
+        var locations = _context.Locations.AsQueryable();
+        if (!string.IsNullOrWhiteSpace(criteria)) {
+            string value = criteria.Trim();
+            locations = locations.Where(l => l.Name.Contains(value) || (l.Code != null && l.Code.Contains(value)) || (l.Description != null && l.Description.Contains(value)));
+        }
+        var list = await locations.OrderBy(l => l.Name).ToListAsync();
+        foreach (var location in list) {
+            location.StockCount = await _context.Stocks.CountAsync(s => s.LocationId == location.Id);
+        }
+        ViewBag.Criteria = criteria;
+        return View(list);
     }
 
     // GET: LOCATIONS/Details/5
@@ -22,12 +33,11 @@ public class LocationController : Controller {
             return NotFound();
         }
 
-        var location = await _context.Locations
-            .FirstOrDefaultAsync(m => m.Id == id);
+        var location = await _context.Locations.FirstOrDefaultAsync(m => m.Id == id);
         if (location == null) {
             return NotFound();
         }
-
+        location.StockCount = await _context.Stocks.CountAsync(s => s.LocationId == location.Id);
         return View(location);
     }
 
@@ -42,7 +52,17 @@ public class LocationController : Controller {
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create([Bind("Id,Name,Code,Description,CreatedAt,UpdatedAt")] Location location) {
+        location.Name = DsmControllerUtilities.Clean(location.Name);
+        location.Code = DsmControllerUtilities.CleanNullable(location.Code);
+        location.Description = DsmControllerUtilities.CleanNullable(location.Description);
+        if (await _context.Locations.AnyAsync(l => l.Name == location.Name)) {
+            ModelState.AddModelError(nameof(location.Name), "Location With This Name Already Exists.");
+        }
+        if (!string.IsNullOrWhiteSpace(location.Code) && await _context.Locations.AnyAsync(l => l.Code == location.Code)) {
+            ModelState.AddModelError(nameof(location.Code), "Location With This Code Already Exists.");
+        }
         if (ModelState.IsValid) {
+            DsmControllerUtilities.StampNew(location);
             _context.Add(location);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
@@ -73,9 +93,26 @@ public class LocationController : Controller {
             return NotFound();
         }
 
+        location.Name = DsmControllerUtilities.Clean(location.Name);
+        location.Code = DsmControllerUtilities.CleanNullable(location.Code);
+        location.Description = DsmControllerUtilities.CleanNullable(location.Description);
+        if (await _context.Locations.AnyAsync(l => l.Id != location.Id && l.Name == location.Name)) {
+            ModelState.AddModelError(nameof(location.Name), "Location With This Name Already Exists.");
+        }
+        if (!string.IsNullOrWhiteSpace(location.Code) && await _context.Locations.AnyAsync(l => l.Id != location.Id && l.Code == location.Code)) {
+            ModelState.AddModelError(nameof(location.Code), "Location With This Code Already Exists.");
+        }
+
         if (ModelState.IsValid) {
             try {
+                DsmControllerUtilities.StampUpdate(location);
                 _context.Update(location);
+                await _context.SaveChangesAsync();
+                var relatedStocks = await _context.Stocks.Where(s => s.LocationId == location.Id).ToListAsync();
+                foreach (var stock in relatedStocks) {
+                    stock.Location = location.Name;
+                    DsmControllerUtilities.StampUpdate(stock);
+                }
                 await _context.SaveChangesAsync();
             } catch (DbUpdateConcurrencyException) {
                 if (!LocationExists(location.Id)) {
@@ -95,12 +132,10 @@ public class LocationController : Controller {
             return NotFound();
         }
 
-        var location = await _context.Locations
-            .FirstOrDefaultAsync(m => m.Id == id);
+        var location = await _context.Locations.FirstOrDefaultAsync(m => m.Id == id);
         if (location == null) {
             return NotFound();
         }
-
         return View(location);
     }
 
@@ -110,6 +145,12 @@ public class LocationController : Controller {
     public async Task<IActionResult> DeleteConfirmed(int? id) {
         var location = await _context.Locations.FindAsync(id);
         if (location != null) {
+            var relatedStocks = await _context.Stocks.Where(s => s.LocationId == location.Id).ToListAsync();
+            foreach (var stock in relatedStocks) {
+                stock.LocationId = null;
+                stock.Location = null;
+                DsmControllerUtilities.StampUpdate(stock);
+            }
             _context.Locations.Remove(location);
         }
 

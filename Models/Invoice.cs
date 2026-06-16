@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DSM.Models {
@@ -6,6 +6,7 @@ namespace DSM.Models {
         public int Id { get; set; }
         [Required(ErrorMessage = "the order must be specified.")]
         public int OrderId { get; set; }
+        public Order? Order { get; set; }
         public DateTime InvoicingDate { get; set; }
         public InvoiceStatus Status { get; set; } = InvoiceStatus.pending;
         [Required(ErrorMessage = "must add an invoicing method.")]
@@ -15,9 +16,10 @@ namespace DSM.Models {
         public decimal Amount { get; set; }
         public string? TransactionRef { get; set; }
         public string? Remark { get; set; }
+        [NotMapped]
+        public string? OrderNumber { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
-
     }
 
     public enum InvoiceStatus {

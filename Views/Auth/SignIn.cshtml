@@ -1,0 +1,100 @@
+@model DSM.ViewModels.SignInViewModel
+@{
+    ViewData["Title"] = "Sign in";
+    Layout = "_AuthLayout";
+    var hasErrors = !ViewData.ModelState.IsValid;
+}
+
+<main class="auth-page signin-page">
+    <section class="signin-panel" aria-label="DSM">
+        <div class="signin-brand-wrap">
+            <div class="signin-brand">
+                <img class="brand-logo main-brand-logo" src="~/logo-full.svg" alt="Delivery Stock Management" />
+            </div>
+
+            <div class="signin-status">
+                <div>
+                    <span>Orders</span>
+                    <strong>Approval Flow</strong>
+                </div>
+                <div>
+                    <span>Stock</span>
+                    <strong>Location Control</strong>
+                </div>
+                <div>
+                    <span>Delivery</span>
+                    <strong>Live Tracking</strong>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="auth-card signin-card" aria-label="Sign in form">
+        <div class="auth-card-header">
+            <span>Workspace</span>
+            <h2>Sign in</h2>
+        </div>
+
+        <form asp-action="SignIn" asp-route-returnUrl="@ViewBag.ReturnUrl" method="post" class="auth-form" novalidate>
+            <label>
+                <span>Username</span>
+                <input asp-for="Username" autocomplete="username" />
+            </label>
+            <span asp-validation-for="Username" class="field-error"></span>
+
+            <label>
+                <span>Password</span>
+                <input asp-for="Password" autocomplete="current-password" />
+            </label>
+            <span asp-validation-for="Password" class="field-error"></span>
+
+            <div class="form-row">
+                <label class="checkbox-label">
+                    <input asp-for="Remember" />
+                    <span>Remember me</span>
+                </label>
+                <a asp-action="ForgotPassword">Forgot password?</a>
+            </div>
+
+            <div asp-validation-summary="ModelOnly" class="form-error"></div>
+            @if (TempData["AuthMessage"] != null) {
+                <p class="form-success">@TempData["AuthMessage"]</p>
+            }
+            @if (hasErrors) {
+                <button class="secondary-button" type="button" data-auth-ticket-toggle>
+                    Open access ticket
+                </button>
+            }
+
+            <button class="primary-button" type="submit">Sign in</button>
+        </form>
+
+        <form asp-action="CreateSignInTicket" method="post" class="auth-form access-ticket-form" data-auth-ticket-form hidden novalidate>
+            <label>
+                <span>Email</span>
+                <input name="TicketEmail" type="email" autocomplete="email" />
+            </label>
+            <label>
+                <span>Type</span>
+                <select name="TicketCategory">
+                    <option value="access">Access</option>
+                    <option value="accountActivation">Account Activation</option>
+                </select>
+            </label>
+            <label>
+                <span>Issue</span>
+                <textarea name="TicketDescription"></textarea>
+            </label>
+            @if (TempData["TicketMessage"] != null) {
+                <p class="form-success">@TempData["TicketMessage"]</p>
+            }
+            <button class="primary-button" type="submit">Send ticket</button>
+        </form>
+
+        <p class="auth-switch">No account yet? <a asp-action="SignUp">Create one</a></p>
+    </section>
+</main>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

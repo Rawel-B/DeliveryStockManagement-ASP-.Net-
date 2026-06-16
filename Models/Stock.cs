@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DSM.Models {
     public class Stock {
@@ -7,12 +8,16 @@ namespace DSM.Models {
         public string Product { get; set; } = string.Empty;
         public string? ProductRef { get; set; }
         public int? LocationId { get; set; }
+        public Location? LocationEntity { get; set; }
         public string? Location { get; set; }
         [Range(0, int.MaxValue, ErrorMessage = "quantity cannot be less than 0.")]
         public int Quantity { get; set; } = 0;
-        public DateTime LastReceiptDate { get; set; }
+        public DateTime? LastReceiptDate { get; set; }
+        [NotMapped]
+        public int ReservedQuantity { get; set; }
+        [NotMapped]
+        public int AvailableQuantity { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
-
     }
 }

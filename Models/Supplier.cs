@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DSM.Models {
     public class Supplier {
@@ -10,8 +11,10 @@ namespace DSM.Models {
         public string? Phone { get; set; }
         public string? Address { get; set; }
         public bool IsActive { get; set; } = true;
+        public List<Order> Orders { get; set; } = new();
+        [NotMapped]
+        public int OrdersCount { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
-
     }
 }
