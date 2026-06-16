@@ -1,74 +1,54 @@
 @model DSM.Models.User
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Delete User";
 }
 
-<h1>Delete</h1>
+<section class="workspace-grid">
+    <section class="confirm-toast delete-card">
+        <span>Confirm deletion</span>
+        <h2>Delete this User?</h2>
+        <p class="delete-warning">This action will remove the selected record.</p>
 
-<h3>Are you sure you want to delete this?</h3>
-<div>
-    <h4>DSM.Models.User</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Username)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Username)
-        </dd>
-    </dl>
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Password)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Password)
-        </dd>
-    </dl>
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-    </dl>
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Email)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Email)
-        </dd>
-    </dl>
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Role)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Role)
-        </dd>
-    </dl>
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IsActive)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IsActive)
-        </dd>
-    </dl>
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CreatedAt)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CreatedAt)
-        </dd>
-    </dl>
-    <form asp-action="Delete">
-        <input type="hidden" asp-for="Id" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
-    </form>
-</div>
+        <section class="row-detail static-detail">
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.Username)</span>
+                    <strong>@Html.DisplayFor(model => model.Username)</strong>
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.Password)</span>
+                    <span class="muted-value">••••••</span>
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.Name)</span>
+                    <strong>@Html.DisplayFor(model => model.Name)</strong>
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.Email)</span>
+                    <strong>@Html.DisplayFor(model => model.Email)</strong>
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.Role)</span>
+                    <strong class="status-pill">@Html.DisplayFor(model => model.Role)</strong>
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.IsActive)</span>
+                    @if (Model?.IsActive == true) {
+                        <strong class="status-pill status-good">Active</strong>
+                    } else {
+                        <strong class="status-pill">Inactive</strong>
+                    }
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.CreatedAt)</span>
+                    <strong>@Html.DisplayFor(model => model.CreatedAt)</strong>
+                </div>
+        </section>
+
+        <form asp-action="Delete" class="form-actions">
+            <input type="hidden" asp-for="Id" />
+            <a asp-action="Index" class="secondary-button">Cancel</a>
+            <button type="submit" class="primary-button danger-submit">Delete</button>
+        </form>
+    </section>
+</section>

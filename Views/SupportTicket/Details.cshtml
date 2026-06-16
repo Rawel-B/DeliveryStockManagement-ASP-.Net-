@@ -1,101 +1,69 @@
 @model DSM.Models.SupportTicket
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "SupportTicket Details";
 }
 
-<h1>Details</h1>
+<section class="workspace-grid">
+    <section class="confirm-toast details-card">
+        <span>SupportTicket details</span>
+        <h2>@Html.DisplayFor(model => model.Subject)</h2>
+        <p class="delete-warning">Manage support tickets, categories, priorities and status.</p>
 
-<div>
-    <h4>SupportTicket</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Subject)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Subject)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Category)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Category)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Priority)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Priority)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Status)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Status)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.RequesterId)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.RequesterId)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.RequesterName)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.RequesterName)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.RequesterEmail)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.RequesterEmail)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.AssignedUserId)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.AssignedUserId)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.AssignedUserName)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.AssignedUserName)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CreatedAt)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CreatedAt)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.UpdatedAt)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.UpdatedAt)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+        <section class="row-detail static-detail">
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.Subject)</span>
+                    <strong>@Html.DisplayFor(model => model.Subject)</strong>
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.Description)</span>
+                    <strong>@Html.DisplayFor(model => model.Description)</strong>
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.Category)</span>
+                    <strong class="status-pill">@Html.DisplayFor(model => model.Category)</strong>
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.Priority)</span>
+                    <strong class="status-pill">@Html.DisplayFor(model => model.Priority)</strong>
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.Status)</span>
+                    <strong class="status-pill">@Html.DisplayFor(model => model.Status)</strong>
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.RequesterId)</span>
+                    <strong>@Html.DisplayFor(model => model.RequesterId)</strong>
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.RequesterName)</span>
+                    <strong>@Html.DisplayFor(model => model.RequesterName)</strong>
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.RequesterEmail)</span>
+                    <strong>@Html.DisplayFor(model => model.RequesterEmail)</strong>
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.AssignedUserId)</span>
+                    <strong>@Html.DisplayFor(model => model.AssignedUserId)</strong>
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.AssignedUserName)</span>
+                    <strong>@Html.DisplayFor(model => model.AssignedUserName)</strong>
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.CreatedAt)</span>
+                    <strong>@Html.DisplayFor(model => model.CreatedAt)</strong>
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.UpdatedAt)</span>
+                    <strong>@Html.DisplayFor(model => model.UpdatedAt)</strong>
+                </div>
+        </section>
+
+        <div class="form-actions">
+            <a asp-action="Index" class="secondary-button">Back</a>
+            <a asp-action="Edit" asp-route-id="@Model?.Id" class="primary-button">Edit</a>
+        </div>
+    </section>
+</section>

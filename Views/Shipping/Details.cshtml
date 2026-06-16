@@ -1,94 +1,65 @@
 @model DSM.Models.Shipping
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Shipping Details";
 }
 
-<h1>Details</h1>
+<section class="workspace-grid">
+    <section class="confirm-toast details-card">
+        <span>Shipping details</span>
+        <h2>@Html.DisplayFor(model => model.OrderId)</h2>
+        <p class="delete-warning">Manage delivery records, carriers and tracking data.</p>
 
-<div>
-    <h4>Shipping</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.OrderId)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.OrderId)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CarrierId)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CarrierId)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DeliveryDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DeliveryDate)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ReceiptDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ReceiptDate)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Cost)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Cost)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Status)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Status)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ShippingAddress)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ShippingAddress)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TrackingNumber)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TrackingNumber)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Remark)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Remark)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CreatedAt)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CreatedAt)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.UpdatedAt)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.UpdatedAt)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+        <section class="row-detail static-detail">
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.OrderId)</span>
+                    <strong>@Html.DisplayFor(model => model.OrderId)</strong>
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.CarrierId)</span>
+                    <strong>@Html.DisplayFor(model => model.CarrierId)</strong>
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.DeliveryDate)</span>
+                    <strong>@Html.DisplayFor(model => model.DeliveryDate)</strong>
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.ReceiptDate)</span>
+                    <strong>@Html.DisplayFor(model => model.ReceiptDate)</strong>
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.Cost)</span>
+                    <strong class="money-value">@Html.DisplayFor(model => model.Cost)</strong>
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.Status)</span>
+                    <strong class="status-pill">@Html.DisplayFor(model => model.Status)</strong>
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.ShippingAddress)</span>
+                    <strong>@Html.DisplayFor(model => model.ShippingAddress)</strong>
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.TrackingNumber)</span>
+                    <strong>@Html.DisplayFor(model => model.TrackingNumber)</strong>
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.Remark)</span>
+                    <strong>@Html.DisplayFor(model => model.Remark)</strong>
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.CreatedAt)</span>
+                    <strong>@Html.DisplayFor(model => model.CreatedAt)</strong>
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.UpdatedAt)</span>
+                    <strong>@Html.DisplayFor(model => model.UpdatedAt)</strong>
+                </div>
+        </section>
+
+        <div class="form-actions">
+            <a asp-action="Index" class="secondary-button">Back</a>
+            <a asp-action="Edit" asp-route-id="@Model?.Id" class="primary-button">Edit</a>
+        </div>
+    </section>
+</section>

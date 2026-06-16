@@ -1,0 +1,119 @@
+@{
+    var controller = (ViewContext.RouteData.Values["controller"]?.ToString() ?? "").ToLowerInvariant();
+    string Active(string name) => controller == name.ToLowerInvariant() ? " active" : "";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Delivery Stock Management</title>
+    <link rel="stylesheet" href="~/css/dsm-dashboard.css" asp-append-version="true" />
+</head>
+<body>
+    <main class="workspace-page">
+        <aside class="workspace-sidebar">
+            <div class="sidebar-brand">
+                <span class="brand-logo-text">DSM</span>
+                <span class="brand-separator"></span>
+                <div class="brand-copy">
+                    <strong>Delivery Stock Management</strong>
+                </div>
+            </div>
+
+            <nav class="workspace-nav" aria-label="Workspace sections">
+                <section class="nav-group primary-group">
+                    <a class="workspace-nav-link@(Active("Dashboard"))" href="/Dashboard">
+                        <i class="pi pi-chart-line"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </section>
+
+                <section class="nav-group">
+                    <h2>Operations</h2>
+                    <div>
+                        <a class="workspace-nav-link@(Active("Order"))" href="/Order">
+                            <i class="pi pi-shopping-cart"></i>
+                            <span>Orders</span>
+                        </a>
+                        <a class="workspace-nav-link@(Active("Shipping"))" href="/Shipping">
+                            <i class="pi pi-truck"></i>
+                            <span>Deliveries</span>
+                        </a>
+                        <a class="workspace-nav-link@(Active("Invoice"))" href="/Invoice">
+                            <i class="pi pi-file"></i>
+                            <span>Invoices</span>
+                        </a>
+                    </div>
+                </section>
+
+                <section class="nav-group">
+                    <h2>Inventory</h2>
+                    <div>
+                        <a class="workspace-nav-link@(Active("Stock"))" href="/Stock">
+                            <i class="pi pi-box"></i>
+                            <span>Stocks</span>
+                        </a>
+                        <a class="workspace-nav-link@(Active("Product"))" href="/Product">
+                            <i class="pi pi-tags"></i>
+                            <span>Products</span>
+                        </a>
+                        <a class="workspace-nav-link@(Active("Location"))" href="/Location">
+                            <i class="pi pi-map-marker"></i>
+                            <span>Locations</span>
+                        </a>
+                    </div>
+                </section>
+
+                <section class="nav-group">
+                    <h2>CRM</h2>
+                    <div>
+                        <a class="workspace-nav-link@(Active("Customer"))" href="/Customer">
+                            <i class="pi pi-users"></i>
+                            <span>Customers</span>
+                        </a>
+                        <a class="workspace-nav-link@(Active("Supplier"))" href="/Supplier">
+                            <i class="pi pi-building"></i>
+                            <span>Suppliers</span>
+                        </a>
+                        <a class="workspace-nav-link@(Active("Carrier"))" href="/Carrier">
+                            <i class="pi pi-send"></i>
+                            <span>Carriers</span>
+                        </a>
+                    </div>
+                </section>
+
+                <section class="nav-group support-group">
+                    <h2>Support</h2>
+                    <div>
+                        <a class="workspace-nav-link@(Active("User"))" href="/User">
+                            <i class="pi pi-lock"></i>
+                            <span>Users</span>
+                        </a>
+                        <a class="workspace-nav-link@(Active("SupportTicket"))" href="/SupportTicket">
+                            <i class="pi pi-ticket"></i>
+                            <span>Support</span>
+                        </a>
+                    </div>
+                </section>
+            </nav>
+        </aside>
+
+        <section class="workspace-main">
+            <header class="workspace-header">
+                <div class="page-title">
+                    <h1>@ViewData["Title"]</h1>
+                </div>
+                <div class="header-actions">
+                    <span class="account-button" aria-label="Profile"><i class="pi pi-user"></i></span>
+                </div>
+            </header>
+
+            @RenderBody()
+        </section>
+    </main>
+
+    <script src="~/js/dsm-dashboard.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

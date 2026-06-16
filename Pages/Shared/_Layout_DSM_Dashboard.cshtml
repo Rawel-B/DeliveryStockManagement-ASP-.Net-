@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Delivery Stock Management</title>
+    <link rel="stylesheet" href="~/css/dsm-dashboard.css" asp-append-version="true" />
+</head>
+<body>
+    <main class="workspace-page">
+        <aside class="workspace-sidebar">
+            <div class="sidebar-brand">
+                <span class="brand-logo-text">DSM</span>
+                <span class="brand-separator"></span>
+                <div class="brand-copy">
+                    <strong>Delivery Stock Management</strong>
+                </div>
+            </div>
+
+            <nav class="workspace-nav" aria-label="Workspace sections">
+                <section class="nav-group primary-group">
+                        <a class="workspace-nav-link" href="/">
+                            <i class="pi pi-home"></i>
+                            <span>Overview</span>
+                        </a>
+                        <a class="workspace-nav-link" href="/Users">
+                            <i class="pi pi-users"></i>
+                            <span>Users</span>
+                        </a>
+                        <a class="workspace-nav-link" href="/Customers">
+                            <i class="pi pi-id-card"></i>
+                            <span>Customers</span>
+                        </a>
+                        <a class="workspace-nav-link" href="/Suppliers">
+                            <i class="pi pi-building"></i>
+                            <span>Suppliers</span>
+                        </a>
+                        <a class="workspace-nav-link" href="/Carriers">
+                            <i class="pi pi-truck"></i>
+                            <span>Carriers</span>
+                        </a>
+                        <a class="workspace-nav-link" href="/Stocks">
+                            <i class="pi pi-warehouse"></i>
+                            <span>Stock</span>
+                        </a>
+                        <a class="workspace-nav-link" href="/Orders">
+                            <i class="pi pi-shopping-cart"></i>
+                            <span>Orders</span>
+                        </a>
+                        <a class="workspace-nav-link" href="/Shippings">
+                            <i class="pi pi-send"></i>
+                            <span>Deliveries</span>
+                        </a>
+                        <a class="workspace-nav-link" href="/Invoices">
+                            <i class="pi pi-receipt"></i>
+                            <span>Invoices</span>
+                        </a>
+                        <a class="workspace-nav-link" href="/Locations">
+                            <i class="pi pi-map-marker"></i>
+                            <span>Locations</span>
+                        </a>
+                        <a class="workspace-nav-link" href="/SupportTickets">
+                            <i class="pi pi-comments"></i>
+                            <span>Support</span>
+                        </a>
+                </section>
+            </nav>
+        </aside>
+
+        <section class="workspace-main">
+            <header class="workspace-header">
+                <div class="page-title">
+                    <h1>@ViewData["Title"]</h1>
+                </div>
+                <div class="header-actions">
+                    <span class="account-button"><i class="pi pi-user"></i></span>
+                </div>
+            </header>
+
+            @RenderBody()
+        </section>
+    </main>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

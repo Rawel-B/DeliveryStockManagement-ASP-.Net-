@@ -1,59 +1,45 @@
 @model DSM.Models.Customer
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Customer Details";
 }
 
-<h1>Details</h1>
+<section class="workspace-grid">
+    <section class="confirm-toast details-card">
+        <span>Customer details</span>
+        <h2>@Html.DisplayFor(model => model.Name)</h2>
+        <p class="delete-warning">Manage customers, contact details and order relationships.</p>
 
-<div>
-    <h4>Customer</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Email)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Email)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Address)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Address)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Phone)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Phone)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CreatedAt)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CreatedAt)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.UpdatedAt)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.UpdatedAt)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+        <section class="row-detail static-detail">
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.Name)</span>
+                    <strong>@Html.DisplayFor(model => model.Name)</strong>
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.Email)</span>
+                    <strong>@Html.DisplayFor(model => model.Email)</strong>
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.Address)</span>
+                    <strong>@Html.DisplayFor(model => model.Address)</strong>
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.Phone)</span>
+                    <strong>@Html.DisplayFor(model => model.Phone)</strong>
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.CreatedAt)</span>
+                    <strong>@Html.DisplayFor(model => model.CreatedAt)</strong>
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.UpdatedAt)</span>
+                    <strong>@Html.DisplayFor(model => model.UpdatedAt)</strong>
+                </div>
+        </section>
+
+        <div class="form-actions">
+            <a asp-action="Index" class="secondary-button">Back</a>
+            <a asp-action="Edit" asp-route-id="@Model?.Id" class="primary-button">Edit</a>
+        </div>
+    </section>
+</section>

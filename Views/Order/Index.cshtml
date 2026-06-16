@@ -1,101 +1,120 @@
 @model IEnumerable<DSM.Models.Order>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Orders";
 }
 
-<h1>Index</h1>
+<section class="workspace-grid">
+    <section class="workspace-table dsm-list-panel" data-dsm-list>
+        <div class="table-head">
+            <div>
+                <h2>Orders</h2>
+                <p>Track orders, customers, suppliers and workflow status.</p>
+            </div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.CustomerId)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.SupplierId)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.OrderDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Status)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TotalAmount)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.OrderNumber)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Remark)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Products)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ShippingIds)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.InvoiceIds)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CreatedAt)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.UpdatedAt)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
+            <div class="table-filters">
+                <span class="filter-leading-icon" aria-hidden="true"><i class="pi pi-search"></i></span>
+                <input class="dsm-search-input" type="search" placeholder="Search orders" aria-label="Search orders" />
+                <button class="icon-button" type="button" data-dsm-clear data-tooltip="Clear" aria-label="Clear search">
+                    <i class="pi pi-times"></i>
+                </button>
+            </div>
+
+            <a asp-action="Create" class="icon-button create-action" data-tooltip="New Order" aria-label="New Order">
+                <i class="pi pi-plus"></i>
+            </a>
+        </div>
+
+        @if (!Model.Any()) {
+            <div class="empty-state">
+                <strong>No orders found.</strong>
+                <span>Add a new record to begin.</span>
+                <a asp-action="Create" class="primary-button">New Order</a>
+            </div>
+        } else {
+            <div class="dsm-rows">
 @foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(model => item.CustomerId)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.SupplierId)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.OrderDate)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.Status)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.TotalAmount)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.OrderNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.Remark)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.Products)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.ShippingIds)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.InvoiceIds)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.CreatedAt)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.UpdatedAt)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
+                <div class="row-shell dsm-search-row">
+                    <article class="table-row">
+                        <div>
+                            <strong>@Html.DisplayFor(modelItem => item.OrderNumber)</strong>
+                            <span>@Html.DisplayFor(modelItem => item.Status)</span>
+                        </div>
+
+                        <div class="row-metrics">
+                            <span class="dsm-chip">@Html.DisplayFor(modelItem => item.CustomerId)</span>
+                            <span class="dsm-chip">@Html.DisplayFor(modelItem => item.SupplierId)</span>
+                            <span class="dsm-chip">@Html.DisplayFor(modelItem => item.OrderDate)</span>
+                        </div>
+
+                        <div class="row-actions">
+                            <a asp-action="Details" asp-route-id="@item.Id" class="icon-button" data-tooltip="Details" aria-label="Details">
+                                <i class="pi pi-eye"></i>
+                            </a>
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="icon-button" data-tooltip="Edit" aria-label="Edit">
+                                <i class="pi pi-pencil"></i>
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="icon-button danger-action" data-tooltip="Delete" aria-label="Delete">
+                                <i class="pi pi-trash"></i>
+                            </a>
+                        </div>
+
+                        <span class="row-chevron"><i class="pi pi-chevron-down"></i></span>
+                    </article>
+
+                    <section class="row-detail static-detail">
+                        <div>
+                            <span>@Html.DisplayNameFor(model => model.CustomerId)</span>
+                            <strong>@Html.DisplayFor(modelItem => item.CustomerId)</strong>
+                        </div>
+                        <div>
+                            <span>@Html.DisplayNameFor(model => model.SupplierId)</span>
+                            <strong>@Html.DisplayFor(modelItem => item.SupplierId)</strong>
+                        </div>
+                        <div>
+                            <span>@Html.DisplayNameFor(model => model.OrderDate)</span>
+                            <strong>@Html.DisplayFor(modelItem => item.OrderDate)</strong>
+                        </div>
+                        <div>
+                            <span>@Html.DisplayNameFor(model => model.Status)</span>
+                            <strong><span class="status-pill">@Html.DisplayFor(modelItem => item.Status)</span></strong>
+                        </div>
+                        <div>
+                            <span>@Html.DisplayNameFor(model => model.TotalAmount)</span>
+                            <strong><span class="money-value">@Html.DisplayFor(modelItem => item.TotalAmount)</span></strong>
+                        </div>
+                        <div>
+                            <span>@Html.DisplayNameFor(model => model.OrderNumber)</span>
+                            <strong>@Html.DisplayFor(modelItem => item.OrderNumber)</strong>
+                        </div>
+                        <div>
+                            <span>@Html.DisplayNameFor(model => model.Remark)</span>
+                            <strong>@Html.DisplayFor(modelItem => item.Remark)</strong>
+                        </div>
+                        <div>
+                            <span>@Html.DisplayNameFor(model => model.Products)</span>
+                            <strong>@Html.DisplayFor(modelItem => item.Products)</strong>
+                        </div>
+                        <div>
+                            <span>@Html.DisplayNameFor(model => model.ShippingIds)</span>
+                            <strong>@Html.DisplayFor(modelItem => item.ShippingIds)</strong>
+                        </div>
+                        <div>
+                            <span>@Html.DisplayNameFor(model => model.InvoiceIds)</span>
+                            <strong>@Html.DisplayFor(modelItem => item.InvoiceIds)</strong>
+                        </div>
+                        <div>
+                            <span>@Html.DisplayNameFor(model => model.CreatedAt)</span>
+                            <strong>@Html.DisplayFor(modelItem => item.CreatedAt)</strong>
+                        </div>
+                        <div>
+                            <span>@Html.DisplayNameFor(model => model.UpdatedAt)</span>
+                            <strong>@Html.DisplayFor(modelItem => item.UpdatedAt)</strong>
+                        </div>
+                    </section>
+                </div>
 }
-    </tbody>
-</table>
+            </div>
+        }
+    </section>
+</section>

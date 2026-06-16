@@ -1,96 +1,103 @@
 @model DSM.Models.Order
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "New Order";
 }
 
-<h1>Create</h1>
-
-<h4>Order</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
+<section class="workspace-grid">
+    <div class="form-backdrop inline-form-backdrop">
+        <form asp-action="Create" class="workspace-form modal-form" novalidate>
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-            <div class="form-group">
-                <label asp-for="CustomerId" class="control-label"></label>
-                <input asp-for="CustomerId" class="form-control" />
-                <span asp-validation-for="CustomerId" class="text-danger"></span>
+            <div class="form-head">
+                <a asp-action="Index" class="icon-button" data-tooltip="Back" aria-label="Back">
+                    <i class="pi pi-arrow-left"></i>
+                </a>
+                <div>
+                    <h2>New Order</h2>
+                    <p>Track orders, customers, suppliers and workflow status.</p>
+                </div>
             </div>
 
-            <div class="form-group">
-                <label asp-for="SupplierId" class="control-label"></label>
-                <input asp-for="SupplierId" class="form-control" />
-                <span asp-validation-for="SupplierId" class="text-danger"></span>
-            </div>
+                        <label>
+                            <span>@Html.DisplayNameFor(model => model.CustomerId)</span>
+                            <input asp-for="CustomerId" type="number" step="any" placeholder="Enter customerid" />
+                            <span asp-validation-for="CustomerId" class="text-danger"></span>
+                        </label>
 
-            <div class="form-group">
-                <label asp-for="OrderDate" class="control-label"></label>
-                <input asp-for="OrderDate" class="form-control" />
-                <span asp-validation-for="OrderDate" class="text-danger"></span>
-            </div>
+                        <label>
+                            <span>@Html.DisplayNameFor(model => model.SupplierId)</span>
+                            <input asp-for="SupplierId" type="number" step="any" placeholder="Enter supplierid" />
+                            <span asp-validation-for="SupplierId" class="text-danger"></span>
+                        </label>
 
-            <div class="form-group">
-                <label asp-for="Status" class="control-label"></label>
-                <input asp-for="Status" class="form-control" />
-                <span asp-validation-for="Status" class="text-danger"></span>
-            </div>
+                        <label>
+                            <span>@Html.DisplayNameFor(model => model.OrderDate)</span>
+                            <input asp-for="OrderDate" placeholder="Enter orderdate" />
+                            <span asp-validation-for="OrderDate" class="text-danger"></span>
+                        </label>
 
-            <div class="form-group">
-                <label asp-for="TotalAmount" class="control-label"></label>
-                <input asp-for="TotalAmount" class="form-control" />
-                <span asp-validation-for="TotalAmount" class="text-danger"></span>
-            </div>
+                        <label>
+                            <span>@Html.DisplayNameFor(model => model.Status)</span>
+                            <input asp-for="Status" placeholder="Enter status" />
+                            <span asp-validation-for="Status" class="text-danger"></span>
+                        </label>
 
-            <div class="form-group">
-                <label asp-for="OrderNumber" class="control-label"></label>
-                <input asp-for="OrderNumber" class="form-control" />
-                <span asp-validation-for="OrderNumber" class="text-danger"></span>
-            </div>
+                        <label>
+                            <span>@Html.DisplayNameFor(model => model.TotalAmount)</span>
+                            <input asp-for="TotalAmount" type="number" step="any" placeholder="Enter totalamount" />
+                            <span asp-validation-for="TotalAmount" class="text-danger"></span>
+                        </label>
 
-            <div class="form-group">
-                <label asp-for="Remark" class="control-label"></label>
-                <input asp-for="Remark" class="form-control" />
-                <span asp-validation-for="Remark" class="text-danger"></span>
-            </div>
+                        <label>
+                            <span>@Html.DisplayNameFor(model => model.OrderNumber)</span>
+                            <input asp-for="OrderNumber" placeholder="Enter ordernumber" />
+                            <span asp-validation-for="OrderNumber" class="text-danger"></span>
+                        </label>
 
-            <div class="form-group">
-                <label asp-for="Products" class="control-label"></label>
-                <input asp-for="Products" class="form-control" />
-                <span asp-validation-for="Products" class="text-danger"></span>
-            </div>
+                        <label>
+                            <span>@Html.DisplayNameFor(model => model.Remark)</span>
+                            <textarea asp-for="Remark" placeholder="Enter remark"></textarea>
+                            <span asp-validation-for="Remark" class="text-danger"></span>
+                        </label>
 
-            <div class="form-group">
-                <label asp-for="ShippingIds" class="control-label"></label>
-                <input asp-for="ShippingIds" class="form-control" />
-                <span asp-validation-for="ShippingIds" class="text-danger"></span>
-            </div>
+                        <label>
+                            <span>@Html.DisplayNameFor(model => model.Products)</span>
+                            <input asp-for="Products" placeholder="Enter products" />
+                            <span asp-validation-for="Products" class="text-danger"></span>
+                        </label>
 
-            <div class="form-group">
-                <label asp-for="InvoiceIds" class="control-label"></label>
-                <input asp-for="InvoiceIds" class="form-control" />
-                <span asp-validation-for="InvoiceIds" class="text-danger"></span>
-            </div>
+                        <label>
+                            <span>@Html.DisplayNameFor(model => model.ShippingIds)</span>
+                            <input asp-for="ShippingIds" placeholder="Enter shippingids" />
+                            <span asp-validation-for="ShippingIds" class="text-danger"></span>
+                        </label>
 
-            <div class="form-group">
-                <label asp-for="CreatedAt" class="control-label"></label>
-                <input asp-for="CreatedAt" class="form-control" />
-                <span asp-validation-for="CreatedAt" class="text-danger"></span>
-            </div>
+                        <label>
+                            <span>@Html.DisplayNameFor(model => model.InvoiceIds)</span>
+                            <input asp-for="InvoiceIds" placeholder="Enter invoiceids" />
+                            <span asp-validation-for="InvoiceIds" class="text-danger"></span>
+                        </label>
 
-            <div class="form-group">
-                <label asp-for="UpdatedAt" class="control-label"></label>
-                <input asp-for="UpdatedAt" class="form-control" />
-                <span asp-validation-for="UpdatedAt" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                        <label>
+                            <span>@Html.DisplayNameFor(model => model.CreatedAt)</span>
+                            <input asp-for="CreatedAt" placeholder="Enter createdat" />
+                            <span asp-validation-for="CreatedAt" class="text-danger"></span>
+                        </label>
+
+                        <label>
+                            <span>@Html.DisplayNameFor(model => model.UpdatedAt)</span>
+                            <input asp-for="UpdatedAt" placeholder="Enter updatedat" />
+                            <span asp-validation-for="UpdatedAt" class="text-danger"></span>
+                        </label>
+
+            <div class="form-actions">
+                <a asp-action="Index" class="secondary-button">Cancel</a>
+                <button type="submit" class="primary-button">Create</button>
             </div>
         </form>
     </div>
-</div>
+</section>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

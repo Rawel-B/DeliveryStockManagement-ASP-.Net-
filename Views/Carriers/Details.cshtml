@@ -1,14 +1,15 @@
 @model DSM.Models.Carrier
 
 @{
-    ViewData["Title"] = "Delete Carrier";
+    ViewData["Title"] = "Details";
 }
 
+@* Generated scaffolded Details view kept and restyled to mirror the original Angular confirmation/details cards. *@
 <section class="workspace-grid">
-    <section class="confirm-toast delete-card">
-        <span>Confirm deletion</span>
-        <h2>Delete this Carrier?</h2>
-        <p class="delete-warning">This action will remove the selected record.</p>
+    <article class="confirm-toast details-toast">
+        <span>Generated record details</span>
+        <h2>Details Carrier</h2>
+        
 
         <section class="row-detail static-detail">
                 <div>
@@ -21,15 +22,11 @@
                 </div>
                 <div>
                     <span>@Html.DisplayNameFor(model => model.Rating)</span>
-                    <strong class="status-pill status-rating">@(Model?.Rating ?? 0)/5</strong>
+                    <strong>@Html.DisplayFor(model => model.Rating)</strong>
                 </div>
                 <div>
                     <span>@Html.DisplayNameFor(model => model.IsActive)</span>
-                    @if (Model?.IsActive == true) {
-                        <strong class="status-pill status-good">Active</strong>
-                    } else {
-                        <strong class="status-pill">Inactive</strong>
-                    }
+                    <strong>@Html.DisplayFor(model => model.IsActive)</strong>
                 </div>
                 <div>
                     <span>@Html.DisplayNameFor(model => model.ShippingIds)</span>
@@ -37,10 +34,9 @@
                 </div>
         </section>
 
-        <form asp-action="Delete" class="form-actions">
-            <input type="hidden" asp-for="Id" />
-            <a asp-action="Index" class="secondary-button">Cancel</a>
-            <button type="submit" class="primary-button danger-submit">Delete</button>
-        </form>
-    </section>
+            <div class="form-actions">
+                <a asp-action="Edit" asp-route-id="@Model?.Id" class="primary-button">Edit</a>
+                <a asp-action="Index" class="secondary-button">Back to List</a>
+            </div>
+    </article>
 </section>

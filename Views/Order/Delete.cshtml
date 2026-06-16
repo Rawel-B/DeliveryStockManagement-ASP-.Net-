@@ -1,114 +1,70 @@
 @model DSM.Models.Order
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Delete Order";
 }
 
-<h1>Delete</h1>
+<section class="workspace-grid">
+    <section class="confirm-toast delete-card">
+        <span>Confirm deletion</span>
+        <h2>Delete this Order?</h2>
+        <p class="delete-warning">This action will remove the selected record.</p>
 
-<h3>Are you sure you want to delete this?</h3>
-<div>
-    <h4>DSM.Models.Order</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CustomerId)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CustomerId)
-        </dd>
-    </dl>
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.SupplierId)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.SupplierId)
-        </dd>
-    </dl>
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.OrderDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.OrderDate)
-        </dd>
-    </dl>
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Status)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Status)
-        </dd>
-    </dl>
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TotalAmount)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TotalAmount)
-        </dd>
-    </dl>
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.OrderNumber)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.OrderNumber)
-        </dd>
-    </dl>
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Remark)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Remark)
-        </dd>
-    </dl>
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Products)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Products)
-        </dd>
-    </dl>
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ShippingIds)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ShippingIds)
-        </dd>
-    </dl>
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.InvoiceIds)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.InvoiceIds)
-        </dd>
-    </dl>
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CreatedAt)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CreatedAt)
-        </dd>
-    </dl>
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.UpdatedAt)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.UpdatedAt)
-        </dd>
-    </dl>
-    <form asp-action="Delete">
-        <input type="hidden" asp-for="Id" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
-    </form>
-</div>
+        <section class="row-detail static-detail">
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.CustomerId)</span>
+                    <strong>@Html.DisplayFor(model => model.CustomerId)</strong>
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.SupplierId)</span>
+                    <strong>@Html.DisplayFor(model => model.SupplierId)</strong>
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.OrderDate)</span>
+                    <strong>@Html.DisplayFor(model => model.OrderDate)</strong>
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.Status)</span>
+                    <strong class="status-pill">@Html.DisplayFor(model => model.Status)</strong>
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.TotalAmount)</span>
+                    <strong class="money-value">@Html.DisplayFor(model => model.TotalAmount)</strong>
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.OrderNumber)</span>
+                    <strong>@Html.DisplayFor(model => model.OrderNumber)</strong>
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.Remark)</span>
+                    <strong>@Html.DisplayFor(model => model.Remark)</strong>
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.Products)</span>
+                    <strong>@Html.DisplayFor(model => model.Products)</strong>
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.ShippingIds)</span>
+                    <strong>@Html.DisplayFor(model => model.ShippingIds)</strong>
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.InvoiceIds)</span>
+                    <strong>@Html.DisplayFor(model => model.InvoiceIds)</strong>
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.CreatedAt)</span>
+                    <strong>@Html.DisplayFor(model => model.CreatedAt)</strong>
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.UpdatedAt)</span>
+                    <strong>@Html.DisplayFor(model => model.UpdatedAt)</strong>
+                </div>
+        </section>
+
+        <form asp-action="Delete" class="form-actions">
+            <input type="hidden" asp-for="Id" />
+            <a asp-action="Index" class="secondary-button">Cancel</a>
+            <button type="submit" class="primary-button danger-submit">Delete</button>
+        </form>
+    </section>
+</section>

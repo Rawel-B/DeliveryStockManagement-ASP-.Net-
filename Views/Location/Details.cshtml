@@ -1,52 +1,41 @@
 @model DSM.Models.Location
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Location Details";
 }
 
-<h1>Details</h1>
+<section class="workspace-grid">
+    <section class="confirm-toast details-card">
+        <span>Location details</span>
+        <h2>@Html.DisplayFor(model => model.Name)</h2>
+        <p class="delete-warning">Manage warehouse and storage locations.</p>
 
-<div>
-    <h4>Location</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Code)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Code)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CreatedAt)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CreatedAt)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.UpdatedAt)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.UpdatedAt)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+        <section class="row-detail static-detail">
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.Name)</span>
+                    <strong>@Html.DisplayFor(model => model.Name)</strong>
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.Code)</span>
+                    <strong>@Html.DisplayFor(model => model.Code)</strong>
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.Description)</span>
+                    <strong>@Html.DisplayFor(model => model.Description)</strong>
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.CreatedAt)</span>
+                    <strong>@Html.DisplayFor(model => model.CreatedAt)</strong>
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.UpdatedAt)</span>
+                    <strong>@Html.DisplayFor(model => model.UpdatedAt)</strong>
+                </div>
+        </section>
+
+        <div class="form-actions">
+            <a asp-action="Index" class="secondary-button">Back</a>
+            <a asp-action="Edit" asp-route-id="@Model?.Id" class="primary-button">Edit</a>
+        </div>
+    </section>
+</section>

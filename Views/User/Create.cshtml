@@ -1,66 +1,74 @@
 @model DSM.Models.User
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "New User";
 }
 
-<h1>Create</h1>
-
-<h4>User</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
+<section class="workspace-grid">
+    <div class="form-backdrop inline-form-backdrop">
+        <form asp-action="Create" class="workspace-form modal-form" novalidate>
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-            <div class="form-group">
-                <label asp-for="Username" class="control-label"></label>
-                <input asp-for="Username" class="form-control" />
-                <span asp-validation-for="Username" class="text-danger"></span>
+            <div class="form-head">
+                <a asp-action="Index" class="icon-button" data-tooltip="Back" aria-label="Back">
+                    <i class="pi pi-arrow-left"></i>
+                </a>
+                <div>
+                    <h2>New User</h2>
+                    <p>Manage workspace users, roles and access status.</p>
+                </div>
             </div>
 
-            <div class="form-group">
-                <label asp-for="Password" class="control-label"></label>
-                <input asp-for="Password" class="form-control" />
-                <span asp-validation-for="Password" class="text-danger"></span>
-            </div>
+                        <label>
+                            <span>@Html.DisplayNameFor(model => model.Username)</span>
+                            <input asp-for="Username" placeholder="Enter username" />
+                            <span asp-validation-for="Username" class="text-danger"></span>
+                        </label>
 
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
+                        <label>
+                            <span>@Html.DisplayNameFor(model => model.Password)</span>
+                            <input asp-for="Password" type="password" placeholder="Enter password" />
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                        </label>
 
-            <div class="form-group">
-                <label asp-for="Email" class="control-label"></label>
-                <input asp-for="Email" class="form-control" />
-                <span asp-validation-for="Email" class="text-danger"></span>
-            </div>
+                        <label>
+                            <span>@Html.DisplayNameFor(model => model.Name)</span>
+                            <input asp-for="Name" placeholder="Enter name" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </label>
 
-            <div class="form-group">
-                <label asp-for="Role" class="control-label"></label>
-                <input asp-for="Role" class="form-control" />
-                <span asp-validation-for="Role" class="text-danger"></span>
-            </div>
+                        <label>
+                            <span>@Html.DisplayNameFor(model => model.Email)</span>
+                            <input asp-for="Email" type="email" placeholder="Enter email" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </label>
 
-            <div class="form-group">
-                <label asp-for="IsActive" class="control-label"></label>
-                <input asp-for="IsActive" class="form-check-input" />
-                <span asp-validation-for="IsActive" class="text-danger"></span>
-            </div>
+                        <label>
+                            <span>@Html.DisplayNameFor(model => model.Role)</span>
+                            <input asp-for="Role" placeholder="Enter role" />
+                            <span asp-validation-for="Role" class="text-danger"></span>
+                        </label>
 
-            <div class="form-group">
-                <label asp-for="CreatedAt" class="control-label"></label>
-                <input asp-for="CreatedAt" class="form-control" />
-                <span asp-validation-for="CreatedAt" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                        <label class="active-toggle">
+                            <input asp-for="IsActive" />
+                            <span></span>
+                            <strong>@Html.DisplayNameFor(model => model.IsActive)</strong>
+                        </label>
+                        <span asp-validation-for="IsActive" class="text-danger"></span>
+
+                        <label>
+                            <span>@Html.DisplayNameFor(model => model.CreatedAt)</span>
+                            <input asp-for="CreatedAt" placeholder="Enter createdat" />
+                            <span asp-validation-for="CreatedAt" class="text-danger"></span>
+                        </label>
+
+            <div class="form-actions">
+                <a asp-action="Index" class="secondary-button">Cancel</a>
+                <button type="submit" class="primary-button">Create</button>
             </div>
         </form>
     </div>
-</div>
+</section>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

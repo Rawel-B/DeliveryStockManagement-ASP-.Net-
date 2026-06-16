@@ -1,0 +1,183 @@
+@{
+    ViewData["Title"] = "Dashboard";
+    var orders = ViewBag.OrdersCount ?? 0;
+    var customers = ViewBag.TotalCustomers ?? 0;
+    var carriers = ViewBag.TotalCarriers ?? 0;
+    var suppliers = ViewBag.TotalSuppliers ?? 0;
+    var stocks = ViewBag.TotalStocks ?? 0;
+    var locations = ViewBag.TotalLocations ?? 0;
+    var invoices = ViewBag.TotalInvoices ?? 0;
+    var shippings = ViewBag.TotalShippings ?? 0;
+    var products = ViewBag.TotalProducts ?? 0;
+    var users = ViewBag.TotalUsers ?? 0;
+    var support = ViewBag.TotalSupportTickets ?? 0;
+}
+
+<section class="dashboard-panel">
+    <form class="dashboard-filters" method="get">
+        <label>
+            <span>Year</span>
+            <select name="year">
+                <option value="">All</option>
+                <option>2026</option>
+                <option>2025</option>
+                <option>2024</option>
+            </select>
+        </label>
+        <label>
+            <span>Orders</span>
+            <select name="orderStatus">
+                <option value="">All</option>
+                <option>Pending Approval</option>
+                <option>Validated</option>
+                <option>Ongoing</option>
+                <option>Delivered</option>
+                <option>Cancelled</option>
+            </select>
+        </label>
+        <label>
+            <span>Deliveries</span>
+            <select name="shippingStatus">
+                <option value="">All</option>
+                <option>In preparation</option>
+                <option>Shipped</option>
+                <option>In transit</option>
+                <option>Delivered</option>
+            </select>
+        </label>
+        <label>
+            <span>Invoices</span>
+            <select name="invoiceStatus">
+                <option value="">All</option>
+                <option>Pending</option>
+                <option>Processing</option>
+                <option>Completed</option>
+                <option>Failed</option>
+            </select>
+        </label>
+    </form>
+
+    <section class="dashboard-kpis">
+        <article>
+            <div><i class="pi pi-shopping-cart"></i><span>Orders</span></div>
+            <strong>@orders</strong>
+            <p>Total order records</p>
+        </article>
+        <article>
+            <div><i class="pi pi-users"></i><span>Customers</span></div>
+            <strong>@customers</strong>
+            <p>Customer profiles</p>
+        </article>
+        <article>
+            <div><i class="pi pi-send"></i><span>Carriers</span></div>
+            <strong>@carriers</strong>
+            <p>Delivery partners</p>
+        </article>
+        <article>
+            <div><i class="pi pi-building"></i><span>Suppliers</span></div>
+            <strong>@suppliers</strong>
+            <p>Supplier records</p>
+        </article>
+        <article>
+            <div><i class="pi pi-box"></i><span>Stocks</span></div>
+            <strong>@stocks</strong>
+            <p>Inventory lines</p>
+        </article>
+        <article>
+            <div><i class="pi pi-file"></i><span>Invoices</span></div>
+            <strong>@invoices</strong>
+            <p>Payment documents</p>
+        </article>
+    </section>
+
+    <section class="dashboard-top-charts">
+        <article class="chart-card trend-card">
+            <div class="chart-header">
+                <div><span>Orders</span><strong>Monthly Order Volume</strong></div>
+            </div>
+            <svg class="power-line-chart" viewBox="0 0 320 178" aria-label="Order volume chart">
+                <line class="grid-line" x1="44" x2="300" y1="42" y2="42"></line>
+                <line class="grid-line" x1="44" x2="300" y1="76" y2="76"></line>
+                <line class="grid-line" x1="44" x2="300" y1="110" y2="110"></line>
+                <line class="axis-line" x1="44" y1="24" x2="44" y2="136"></line>
+                <line class="axis-line" x1="44" y1="136" x2="300" y2="136"></line>
+                <polygon points="44,136 44,116 95,102 146,114 198,76 249,88 300,54 300,136"></polygon>
+                <polyline points="44,116 95,102 146,114 198,76 249,88 300,54"></polyline>
+                <circle cx="44" cy="116" r="3"></circle><circle cx="95" cy="102" r="3"></circle><circle cx="146" cy="114" r="3"></circle><circle cx="198" cy="76" r="3"></circle><circle cx="249" cy="88" r="3"></circle><circle cx="300" cy="54" r="3"></circle>
+            </svg>
+        </article>
+
+        <article class="chart-card trend-card">
+            <div class="chart-header">
+                <div><span>Deliveries</span><strong>Monthly Delivery Volume</strong></div>
+            </div>
+            <svg class="power-line-chart" viewBox="0 0 320 178" aria-label="Delivery volume chart">
+                <line class="grid-line" x1="44" x2="300" y1="42" y2="42"></line>
+                <line class="grid-line" x1="44" x2="300" y1="76" y2="76"></line>
+                <line class="grid-line" x1="44" x2="300" y1="110" y2="110"></line>
+                <line class="axis-line" x1="44" y1="24" x2="44" y2="136"></line>
+                <line class="axis-line" x1="44" y1="136" x2="300" y2="136"></line>
+                <polygon points="44,136 44,126 95,118 146,98 198,104 249,70 300,80 300,136"></polygon>
+                <polyline points="44,126 95,118 146,98 198,104 249,70 300,80"></polyline>
+                <circle cx="44" cy="126" r="3"></circle><circle cx="95" cy="118" r="3"></circle><circle cx="146" cy="98" r="3"></circle><circle cx="198" cy="104" r="3"></circle><circle cx="249" cy="70" r="3"></circle><circle cx="300" cy="80" r="3"></circle>
+            </svg>
+        </article>
+
+        <article class="chart-card trend-card">
+            <div class="chart-header">
+                <div><span>Invoices</span><strong>Monthly Collected Revenue</strong></div>
+            </div>
+            <svg class="power-line-chart" viewBox="0 0 320 178" aria-label="Collected revenue chart">
+                <line class="grid-line" x1="44" x2="300" y1="42" y2="42"></line>
+                <line class="grid-line" x1="44" x2="300" y1="76" y2="76"></line>
+                <line class="grid-line" x1="44" x2="300" y1="110" y2="110"></line>
+                <line class="axis-line" x1="44" y1="24" x2="44" y2="136"></line>
+                <line class="axis-line" x1="44" y1="136" x2="300" y2="136"></line>
+                <polygon points="44,136 44,120 95,104 146,92 198,98 249,64 300,48 300,136"></polygon>
+                <polyline points="44,120 95,104 146,92 198,98 249,64 300,48"></polyline>
+                <circle cx="44" cy="120" r="3"></circle><circle cx="95" cy="104" r="3"></circle><circle cx="146" cy="92" r="3"></circle><circle cx="198" cy="98" r="3"></circle><circle cx="249" cy="64" r="3"></circle><circle cx="300" cy="48" r="3"></circle>
+            </svg>
+        </article>
+    </section>
+
+    <section class="dashboard-board">
+        <article class="chart-card dashboard-chart-large">
+            <div class="chart-header"><div><span>Inventory</span><strong>Stock And Warehouse Scope</strong></div></div>
+            <div class="dashboard-line-list order-value-list">
+                <div><header><span>Products</span><strong>@products</strong></header><div class="bar-track"><i style="width:65%"></i></div><small>Registered products</small></div>
+                <div><header><span>Locations</span><strong>@locations</strong></header><div class="bar-track"><i style="width:45%"></i></div><small>Storage locations</small></div>
+                <div><header><span>Stock lines</span><strong>@stocks</strong></header><div class="bar-track"><i style="width:80%"></i></div><small>Current stock records</small></div>
+            </div>
+        </article>
+
+        <article class="chart-card dashboard-chart-large fulfillment-card">
+            <div class="chart-header"><div><span>Operations</span><strong>Fulfillment Pipeline</strong></div></div>
+            <section class="fulfillment-summary">
+                <div><span>Orders</span><strong>@orders</strong></div>
+                <div><span>Deliveries</span><strong>@shippings</strong><small>Shipping records</small></div>
+            </section>
+            <div class="fulfillment-chart">
+                <div class="fulfillment-stage"><div class="fulfillment-column"><i style="height:55%"></i></div><strong>@orders</strong><span>Orders</span><small>Created</small></div>
+                <div class="fulfillment-stage"><div class="fulfillment-column"><i style="height:45%"></i></div><strong>@shippings</strong><span>Deliveries</span><small>Planned</small></div>
+                <div class="fulfillment-stage"><div class="fulfillment-column"><i style="height:35%"></i></div><strong>@invoices</strong><span>Invoices</span><small>Billed</small></div>
+            </div>
+        </article>
+
+        <article class="chart-card dashboard-chart-large revenue-overview">
+            <div class="chart-header"><div><span>CRM</span><strong>Network Overview</strong></div></div>
+            <section class="revenue-metrics">
+                <div><span>Customers</span><strong>@customers</strong></div>
+                <div><span>Suppliers</span><strong>@suppliers</strong></div>
+                <div><span>Carriers</span><strong>@carriers</strong></div>
+            </section>
+        </article>
+
+        <article class="chart-card dashboard-chart-large">
+            <div class="chart-header"><div><span>Support</span><strong>Access And Tickets</strong></div></div>
+            <section class="revenue-metrics">
+                <div><span>Users</span><strong>@users</strong></div>
+                <div><span>Tickets</span><strong>@support</strong></div>
+            </section>
+        </article>
+    </section>
+</section>

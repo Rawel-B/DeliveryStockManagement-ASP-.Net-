@@ -1,53 +1,62 @@
 @model DSM.Models.Location
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Update Location";
 }
 
-<h1>Edit</h1>
-
-<h4>Location</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
+<section class="workspace-grid">
+    <div class="form-backdrop inline-form-backdrop">
+        <form asp-action="Edit" class="workspace-form modal-form" novalidate>
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
+            <div class="form-head">
+                <a asp-action="Index" class="icon-button" data-tooltip="Back" aria-label="Back">
+                    <i class="pi pi-arrow-left"></i>
+                </a>
+                <div>
+                    <h2>Update Location</h2>
+                    <p>Manage warehouse and storage locations.</p>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Code" class="control-label"></label>
-                <input asp-for="Code" class="form-control" />
-                <span asp-validation-for="Code" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CreatedAt" class="control-label"></label>
-                <input asp-for="CreatedAt" class="form-control" />
-                <span asp-validation-for="CreatedAt" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="UpdatedAt" class="control-label"></label>
-                <input asp-for="UpdatedAt" class="form-control" />
-                <span asp-validation-for="UpdatedAt" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+
+                        <input type="hidden" asp-for="Id" />
+
+                        <label>
+                            <span>@Html.DisplayNameFor(model => model.Name)</span>
+                            <input asp-for="Name" placeholder="Enter name" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </label>
+
+                        <label>
+                            <span>@Html.DisplayNameFor(model => model.Code)</span>
+                            <input asp-for="Code" placeholder="Enter code" />
+                            <span asp-validation-for="Code" class="text-danger"></span>
+                        </label>
+
+                        <label>
+                            <span>@Html.DisplayNameFor(model => model.Description)</span>
+                            <textarea asp-for="Description" placeholder="Enter description"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </label>
+
+                        <label>
+                            <span>@Html.DisplayNameFor(model => model.CreatedAt)</span>
+                            <input asp-for="CreatedAt" placeholder="Enter createdat" />
+                            <span asp-validation-for="CreatedAt" class="text-danger"></span>
+                        </label>
+
+                        <label>
+                            <span>@Html.DisplayNameFor(model => model.UpdatedAt)</span>
+                            <input asp-for="UpdatedAt" placeholder="Enter updatedat" />
+                            <span asp-validation-for="UpdatedAt" class="text-danger"></span>
+                        </label>
+
+            <div class="form-actions">
+                <a asp-action="Index" class="secondary-button">Cancel</a>
+                <button type="submit" class="primary-button">Save</button>
             </div>
         </form>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+</section>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

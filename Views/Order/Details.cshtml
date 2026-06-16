@@ -1,101 +1,69 @@
 @model DSM.Models.Order
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Order Details";
 }
 
-<h1>Details</h1>
+<section class="workspace-grid">
+    <section class="confirm-toast details-card">
+        <span>Order details</span>
+        <h2>@Html.DisplayFor(model => model.OrderNumber)</h2>
+        <p class="delete-warning">Track orders, customers, suppliers and workflow status.</p>
 
-<div>
-    <h4>Order</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CustomerId)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CustomerId)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.SupplierId)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.SupplierId)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.OrderDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.OrderDate)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Status)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Status)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TotalAmount)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TotalAmount)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.OrderNumber)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.OrderNumber)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Remark)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Remark)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Products)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Products)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ShippingIds)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ShippingIds)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.InvoiceIds)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.InvoiceIds)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CreatedAt)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CreatedAt)
-        </dd>
-    </dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.UpdatedAt)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.UpdatedAt)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+        <section class="row-detail static-detail">
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.CustomerId)</span>
+                    <strong>@Html.DisplayFor(model => model.CustomerId)</strong>
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.SupplierId)</span>
+                    <strong>@Html.DisplayFor(model => model.SupplierId)</strong>
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.OrderDate)</span>
+                    <strong>@Html.DisplayFor(model => model.OrderDate)</strong>
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.Status)</span>
+                    <strong class="status-pill">@Html.DisplayFor(model => model.Status)</strong>
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.TotalAmount)</span>
+                    <strong class="money-value">@Html.DisplayFor(model => model.TotalAmount)</strong>
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.OrderNumber)</span>
+                    <strong>@Html.DisplayFor(model => model.OrderNumber)</strong>
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.Remark)</span>
+                    <strong>@Html.DisplayFor(model => model.Remark)</strong>
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.Products)</span>
+                    <strong>@Html.DisplayFor(model => model.Products)</strong>
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.ShippingIds)</span>
+                    <strong>@Html.DisplayFor(model => model.ShippingIds)</strong>
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.InvoiceIds)</span>
+                    <strong>@Html.DisplayFor(model => model.InvoiceIds)</strong>
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.CreatedAt)</span>
+                    <strong>@Html.DisplayFor(model => model.CreatedAt)</strong>
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.UpdatedAt)</span>
+                    <strong>@Html.DisplayFor(model => model.UpdatedAt)</strong>
+                </div>
+        </section>
+
+        <div class="form-actions">
+            <a asp-action="Index" class="secondary-button">Back</a>
+            <a asp-action="Edit" asp-route-id="@Model?.Id" class="primary-button">Edit</a>
+        </div>
+    </section>
+</section>

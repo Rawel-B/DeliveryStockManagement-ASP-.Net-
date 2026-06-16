@@ -1,77 +1,104 @@
 @model IEnumerable<DSM.Models.Product>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Products";
 }
 
-<h1>Index</h1>
+<section class="workspace-grid">
+    <section class="workspace-table dsm-list-panel" data-dsm-list>
+        <div class="table-head">
+            <div>
+                <h2>Products</h2>
+                <p>Manage product lines, quantities and pricing.</p>
+            </div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.OrderId)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ProductName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ProductRef)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Quantity)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PricePerUnit)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.SubTotal)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CreatedAt)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.UpdatedAt)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
+            <div class="table-filters">
+                <span class="filter-leading-icon" aria-hidden="true"><i class="pi pi-search"></i></span>
+                <input class="dsm-search-input" type="search" placeholder="Search products" aria-label="Search products" />
+                <button class="icon-button" type="button" data-dsm-clear data-tooltip="Clear" aria-label="Clear search">
+                    <i class="pi pi-times"></i>
+                </button>
+            </div>
+
+            <a asp-action="Create" class="icon-button create-action" data-tooltip="New Product" aria-label="New Product">
+                <i class="pi pi-plus"></i>
+            </a>
+        </div>
+
+        @if (!Model.Any()) {
+            <div class="empty-state">
+                <strong>No products found.</strong>
+                <span>Add a new record to begin.</span>
+                <a asp-action="Create" class="primary-button">New Product</a>
+            </div>
+        } else {
+            <div class="dsm-rows">
 @foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(model => item.OrderId)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.ProductName)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.ProductRef)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.Quantity)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.PricePerUnit)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.SubTotal)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.CreatedAt)
-            </td>
-            <td>
-                @Html.DisplayFor(model => item.UpdatedAt)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
+                <div class="row-shell dsm-search-row">
+                    <article class="table-row">
+                        <div>
+                            <strong>@Html.DisplayFor(modelItem => item.OrderId)</strong>
+                            <span>@Html.DisplayFor(modelItem => item.ProductRef)</span>
+                        </div>
+
+                        <div class="row-metrics">
+                            <span class="dsm-chip">@Html.DisplayFor(modelItem => item.ProductName)</span>
+                            <span class="dsm-chip">@Html.DisplayFor(modelItem => item.Quantity)</span>
+                            <span class="dsm-chip"><span class="money-value">@Html.DisplayFor(modelItem => item.PricePerUnit)</span></span>
+                        </div>
+
+                        <div class="row-actions">
+                            <a asp-action="Details" asp-route-id="@item.Id" class="icon-button" data-tooltip="Details" aria-label="Details">
+                                <i class="pi pi-eye"></i>
+                            </a>
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="icon-button" data-tooltip="Edit" aria-label="Edit">
+                                <i class="pi pi-pencil"></i>
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="icon-button danger-action" data-tooltip="Delete" aria-label="Delete">
+                                <i class="pi pi-trash"></i>
+                            </a>
+                        </div>
+
+                        <span class="row-chevron"><i class="pi pi-chevron-down"></i></span>
+                    </article>
+
+                    <section class="row-detail static-detail">
+                        <div>
+                            <span>@Html.DisplayNameFor(model => model.OrderId)</span>
+                            <strong>@Html.DisplayFor(modelItem => item.OrderId)</strong>
+                        </div>
+                        <div>
+                            <span>@Html.DisplayNameFor(model => model.ProductName)</span>
+                            <strong>@Html.DisplayFor(modelItem => item.ProductName)</strong>
+                        </div>
+                        <div>
+                            <span>@Html.DisplayNameFor(model => model.ProductRef)</span>
+                            <strong>@Html.DisplayFor(modelItem => item.ProductRef)</strong>
+                        </div>
+                        <div>
+                            <span>@Html.DisplayNameFor(model => model.Quantity)</span>
+                            <strong>@Html.DisplayFor(modelItem => item.Quantity)</strong>
+                        </div>
+                        <div>
+                            <span>@Html.DisplayNameFor(model => model.PricePerUnit)</span>
+                            <strong><span class="money-value">@Html.DisplayFor(modelItem => item.PricePerUnit)</span></strong>
+                        </div>
+                        <div>
+                            <span>@Html.DisplayNameFor(model => model.SubTotal)</span>
+                            <strong><span class="money-value">@Html.DisplayFor(modelItem => item.SubTotal)</span></strong>
+                        </div>
+                        <div>
+                            <span>@Html.DisplayNameFor(model => model.CreatedAt)</span>
+                            <strong>@Html.DisplayFor(modelItem => item.CreatedAt)</strong>
+                        </div>
+                        <div>
+                            <span>@Html.DisplayNameFor(model => model.UpdatedAt)</span>
+                            <strong>@Html.DisplayFor(modelItem => item.UpdatedAt)</strong>
+                        </div>
+                    </section>
+                </div>
 }
-    </tbody>
-</table>
+            </div>
+        }
+    </section>
+</section>

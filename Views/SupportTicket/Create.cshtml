@@ -1,96 +1,103 @@
 @model DSM.Models.SupportTicket
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "New SupportTicket";
 }
 
-<h1>Create</h1>
-
-<h4>SupportTicket</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
+<section class="workspace-grid">
+    <div class="form-backdrop inline-form-backdrop">
+        <form asp-action="Create" class="workspace-form modal-form" novalidate>
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-            <div class="form-group">
-                <label asp-for="Subject" class="control-label"></label>
-                <input asp-for="Subject" class="form-control" />
-                <span asp-validation-for="Subject" class="text-danger"></span>
+            <div class="form-head">
+                <a asp-action="Index" class="icon-button" data-tooltip="Back" aria-label="Back">
+                    <i class="pi pi-arrow-left"></i>
+                </a>
+                <div>
+                    <h2>New SupportTicket</h2>
+                    <p>Manage support tickets, categories, priorities and status.</p>
+                </div>
             </div>
 
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
+                        <label>
+                            <span>@Html.DisplayNameFor(model => model.Subject)</span>
+                            <input asp-for="Subject" placeholder="Enter subject" />
+                            <span asp-validation-for="Subject" class="text-danger"></span>
+                        </label>
 
-            <div class="form-group">
-                <label asp-for="Category" class="control-label"></label>
-                <input asp-for="Category" class="form-control" />
-                <span asp-validation-for="Category" class="text-danger"></span>
-            </div>
+                        <label>
+                            <span>@Html.DisplayNameFor(model => model.Description)</span>
+                            <textarea asp-for="Description" placeholder="Enter description"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </label>
 
-            <div class="form-group">
-                <label asp-for="Priority" class="control-label"></label>
-                <input asp-for="Priority" class="form-control" />
-                <span asp-validation-for="Priority" class="text-danger"></span>
-            </div>
+                        <label>
+                            <span>@Html.DisplayNameFor(model => model.Category)</span>
+                            <input asp-for="Category" placeholder="Enter category" />
+                            <span asp-validation-for="Category" class="text-danger"></span>
+                        </label>
 
-            <div class="form-group">
-                <label asp-for="Status" class="control-label"></label>
-                <input asp-for="Status" class="form-control" />
-                <span asp-validation-for="Status" class="text-danger"></span>
-            </div>
+                        <label>
+                            <span>@Html.DisplayNameFor(model => model.Priority)</span>
+                            <input asp-for="Priority" placeholder="Enter priority" />
+                            <span asp-validation-for="Priority" class="text-danger"></span>
+                        </label>
 
-            <div class="form-group">
-                <label asp-for="RequesterId" class="control-label"></label>
-                <input asp-for="RequesterId" class="form-control" />
-                <span asp-validation-for="RequesterId" class="text-danger"></span>
-            </div>
+                        <label>
+                            <span>@Html.DisplayNameFor(model => model.Status)</span>
+                            <input asp-for="Status" placeholder="Enter status" />
+                            <span asp-validation-for="Status" class="text-danger"></span>
+                        </label>
 
-            <div class="form-group">
-                <label asp-for="RequesterName" class="control-label"></label>
-                <input asp-for="RequesterName" class="form-control" />
-                <span asp-validation-for="RequesterName" class="text-danger"></span>
-            </div>
+                        <label>
+                            <span>@Html.DisplayNameFor(model => model.RequesterId)</span>
+                            <input asp-for="RequesterId" type="number" step="any" placeholder="Enter requesterid" />
+                            <span asp-validation-for="RequesterId" class="text-danger"></span>
+                        </label>
 
-            <div class="form-group">
-                <label asp-for="RequesterEmail" class="control-label"></label>
-                <input asp-for="RequesterEmail" class="form-control" />
-                <span asp-validation-for="RequesterEmail" class="text-danger"></span>
-            </div>
+                        <label>
+                            <span>@Html.DisplayNameFor(model => model.RequesterName)</span>
+                            <input asp-for="RequesterName" placeholder="Enter requestername" />
+                            <span asp-validation-for="RequesterName" class="text-danger"></span>
+                        </label>
 
-            <div class="form-group">
-                <label asp-for="AssignedUserId" class="control-label"></label>
-                <input asp-for="AssignedUserId" class="form-control" />
-                <span asp-validation-for="AssignedUserId" class="text-danger"></span>
-            </div>
+                        <label>
+                            <span>@Html.DisplayNameFor(model => model.RequesterEmail)</span>
+                            <input asp-for="RequesterEmail" placeholder="Enter requesteremail" />
+                            <span asp-validation-for="RequesterEmail" class="text-danger"></span>
+                        </label>
 
-            <div class="form-group">
-                <label asp-for="AssignedUserName" class="control-label"></label>
-                <input asp-for="AssignedUserName" class="form-control" />
-                <span asp-validation-for="AssignedUserName" class="text-danger"></span>
-            </div>
+                        <label>
+                            <span>@Html.DisplayNameFor(model => model.AssignedUserId)</span>
+                            <input asp-for="AssignedUserId" type="number" step="any" placeholder="Enter assigneduserid" />
+                            <span asp-validation-for="AssignedUserId" class="text-danger"></span>
+                        </label>
 
-            <div class="form-group">
-                <label asp-for="CreatedAt" class="control-label"></label>
-                <input asp-for="CreatedAt" class="form-control" />
-                <span asp-validation-for="CreatedAt" class="text-danger"></span>
-            </div>
+                        <label>
+                            <span>@Html.DisplayNameFor(model => model.AssignedUserName)</span>
+                            <input asp-for="AssignedUserName" placeholder="Enter assignedusername" />
+                            <span asp-validation-for="AssignedUserName" class="text-danger"></span>
+                        </label>
 
-            <div class="form-group">
-                <label asp-for="UpdatedAt" class="control-label"></label>
-                <input asp-for="UpdatedAt" class="form-control" />
-                <span asp-validation-for="UpdatedAt" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                        <label>
+                            <span>@Html.DisplayNameFor(model => model.CreatedAt)</span>
+                            <input asp-for="CreatedAt" placeholder="Enter createdat" />
+                            <span asp-validation-for="CreatedAt" class="text-danger"></span>
+                        </label>
+
+                        <label>
+                            <span>@Html.DisplayNameFor(model => model.UpdatedAt)</span>
+                            <input asp-for="UpdatedAt" placeholder="Enter updatedat" />
+                            <span asp-validation-for="UpdatedAt" class="text-danger"></span>
+                        </label>
+
+            <div class="form-actions">
+                <a asp-action="Index" class="secondary-button">Cancel</a>
+                <button type="submit" class="primary-button">Create</button>
             </div>
         </form>
     </div>
-</div>
+</section>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
