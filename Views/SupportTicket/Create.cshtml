@@ -1,0 +1,96 @@
+@model DSM.Models.SupportTicket
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>SupportTicket</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group">
+                <label asp-for="Subject" class="control-label"></label>
+                <input asp-for="Subject" class="form-control" />
+                <span asp-validation-for="Subject" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Description" class="control-label"></label>
+                <input asp-for="Description" class="form-control" />
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Category" class="control-label"></label>
+                <input asp-for="Category" class="form-control" />
+                <span asp-validation-for="Category" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Priority" class="control-label"></label>
+                <input asp-for="Priority" class="form-control" />
+                <span asp-validation-for="Priority" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Status" class="control-label"></label>
+                <input asp-for="Status" class="form-control" />
+                <span asp-validation-for="Status" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="RequesterId" class="control-label"></label>
+                <input asp-for="RequesterId" class="form-control" />
+                <span asp-validation-for="RequesterId" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="RequesterName" class="control-label"></label>
+                <input asp-for="RequesterName" class="form-control" />
+                <span asp-validation-for="RequesterName" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="RequesterEmail" class="control-label"></label>
+                <input asp-for="RequesterEmail" class="form-control" />
+                <span asp-validation-for="RequesterEmail" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="AssignedUserId" class="control-label"></label>
+                <input asp-for="AssignedUserId" class="form-control" />
+                <span asp-validation-for="AssignedUserId" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="AssignedUserName" class="control-label"></label>
+                <input asp-for="AssignedUserName" class="form-control" />
+                <span asp-validation-for="AssignedUserName" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="CreatedAt" class="control-label"></label>
+                <input asp-for="CreatedAt" class="form-control" />
+                <span asp-validation-for="CreatedAt" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="UpdatedAt" class="control-label"></label>
+                <input asp-for="UpdatedAt" class="form-control" />
+                <span asp-validation-for="UpdatedAt" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
