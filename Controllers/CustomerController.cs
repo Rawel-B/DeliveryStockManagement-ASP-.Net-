@@ -53,13 +53,22 @@ public class CustomerController : Controller {
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create([Bind("Id,Name,Email,Address,Phone,CreatedAt,UpdatedAt")] Customer customer) {
         customer.Email = DsmControllerUtilities.Clean(customer.Email).ToLowerInvariant();
-        if (await _context.Customers.AnyAsync(c => c.Email == customer.Email)) {
+        customer.Name = DsmControllerUtilities.Clean(customer.Name);
+        customer.Address = DsmControllerUtilities.Clean(customer.Address);
+        customer.Phone = DsmControllerUtilities.Clean(customer.Phone);
+        if (string.IsNullOrWhiteSpace(customer.Address)) {
+            ModelState.AddModelError(nameof(customer.Address), "address must be filled.");
+        }
+        if (string.IsNullOrWhiteSpace(customer.Phone)) {
+            ModelState.AddModelError(nameof(customer.Phone), "phone must be filled.");
+        }
+        if (!string.IsNullOrWhiteSpace(customer.Email) && await _context.Customers.AnyAsync(c => c.Email == customer.Email)) {
             ModelState.AddModelError(nameof(customer.Email), "a Customer With This Email Already Exists.");
         }
         if (ModelState.IsValid) {
             customer.Name = DsmControllerUtilities.Clean(customer.Name);
-            customer.Address = DsmControllerUtilities.CleanNullable(customer.Address);
-            customer.Phone = DsmControllerUtilities.CleanNullable(customer.Phone);
+            customer.Address = DsmControllerUtilities.Clean(customer.Address);
+            customer.Phone = DsmControllerUtilities.Clean(customer.Phone);
             DsmControllerUtilities.StampNew(customer);
             _context.Add(customer);
             await _context.SaveChangesAsync();
@@ -99,8 +108,8 @@ public class CustomerController : Controller {
         if (ModelState.IsValid) {
             try {
                 customer.Name = DsmControllerUtilities.Clean(customer.Name);
-                customer.Address = DsmControllerUtilities.CleanNullable(customer.Address);
-                customer.Phone = DsmControllerUtilities.CleanNullable(customer.Phone);
+                customer.Address = DsmControllerUtilities.Clean(customer.Address);
+                customer.Phone = DsmControllerUtilities.Clean(customer.Phone);
                 DsmControllerUtilities.StampUpdate(customer);
                 _context.Update(customer);
                 await _context.SaveChangesAsync();

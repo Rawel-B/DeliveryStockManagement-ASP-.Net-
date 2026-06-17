@@ -10,8 +10,12 @@ namespace DSM.Models {
         [EmailAddress(ErrorMessage = "email must be valid.")]
         [Required(ErrorMessage = "email must be filled.")]
         public string Email { get; set; } = string.Empty;
-        public string? Address { get; set; }
-        public string? Phone { get; set; }
+        [Required(ErrorMessage = "address must be filled.")]
+        [StringLength(250, MinimumLength = 3)]
+        public string Address { get; set; } = string.Empty;
+        [Required(ErrorMessage = "phone must be filled.")]
+        [StringLength(40, MinimumLength = 3)]
+        public string Phone { get; set; } = string.Empty;
         public List<Order> Orders { get; set; } = new();
         [NotMapped]
         public int OrdersCount { get; set; }

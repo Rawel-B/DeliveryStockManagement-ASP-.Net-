@@ -73,6 +73,16 @@ namespace DSM.Data {
                 .HasIndex(user => user.Email)
                 .IsUnique()
                 .HasFilter("[Email] IS NOT NULL");
+
+            AllowLegacyNullableStrings(modelBuilder);
+        }
+
+        private static void AllowLegacyNullableStrings(ModelBuilder modelBuilder) {
+            foreach (var entityType in modelBuilder.Model.GetEntityTypes()) {
+                foreach (var property in entityType.GetProperties().Where(property => property.ClrType == typeof(string))) {
+                    modelBuilder.Entity(entityType.ClrType).Property(property.Name).IsRequired(false);
+                }
+            }
         }
 
         public override int SaveChanges() {

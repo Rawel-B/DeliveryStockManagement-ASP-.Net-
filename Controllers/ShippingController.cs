@@ -53,6 +53,16 @@ public class ShippingController : Controller {
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create([Bind("Id,OrderId,CarrierId,DeliveryDate,ReceiptDate,Cost,Status,ShippingAddress,TrackingNumber,Remark,CreatedAt,UpdatedAt")] Shipping shipping) {
+        shipping.ShippingAddress = DsmControllerUtilities.Clean(shipping.ShippingAddress);
+        if (shipping.CarrierId == null) {
+            ModelState.AddModelError(nameof(shipping.CarrierId), "carrier must be specified.");
+        }
+        if (shipping.DeliveryDate == null || shipping.DeliveryDate == default) {
+            ModelState.AddModelError(nameof(shipping.DeliveryDate), "delivery date must be specified.");
+        }
+        if (string.IsNullOrWhiteSpace(shipping.ShippingAddress)) {
+            ModelState.AddModelError(nameof(shipping.ShippingAddress), "shipping address must be filled.");
+        }
         var order = await _context.Orders.FindAsync(shipping.OrderId);
         if (order == null) {
             ModelState.AddModelError(nameof(shipping.OrderId), "Order Was Not Found.");
@@ -70,7 +80,7 @@ public class ShippingController : Controller {
 
         if (ModelState.IsValid) {
             shipping.Status = ShippingStatus.inPerparation;
-            shipping.ShippingAddress = DsmControllerUtilities.CleanNullable(shipping.ShippingAddress);
+            shipping.ShippingAddress = DsmControllerUtilities.Clean(shipping.ShippingAddress);
             shipping.TrackingNumber = DsmControllerUtilities.CleanNullable(shipping.TrackingNumber);
             shipping.Remark = DsmControllerUtilities.CleanNullable(shipping.Remark);
             DsmControllerUtilities.StampNew(shipping);
@@ -106,6 +116,16 @@ public class ShippingController : Controller {
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int? id, [Bind("Id,OrderId,CarrierId,DeliveryDate,ReceiptDate,Cost,Status,ShippingAddress,TrackingNumber,Remark,CreatedAt,UpdatedAt")] Shipping shipping) {
+        shipping.ShippingAddress = DsmControllerUtilities.Clean(shipping.ShippingAddress);
+        if (shipping.CarrierId == null) {
+            ModelState.AddModelError(nameof(shipping.CarrierId), "carrier must be specified.");
+        }
+        if (shipping.DeliveryDate == null || shipping.DeliveryDate == default) {
+            ModelState.AddModelError(nameof(shipping.DeliveryDate), "delivery date must be specified.");
+        }
+        if (string.IsNullOrWhiteSpace(shipping.ShippingAddress)) {
+            ModelState.AddModelError(nameof(shipping.ShippingAddress), "shipping address must be filled.");
+        }
         if (id != shipping.Id) {
             return NotFound();
         }

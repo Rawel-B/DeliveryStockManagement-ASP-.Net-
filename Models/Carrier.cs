@@ -6,7 +6,9 @@ namespace DSM.Models {
         public int Id { get; set; }
         [Required(ErrorMessage = "name must be filled.")]
         public string Name { get; set; } = string.Empty;
-        public string? Phone { get; set; }
+        [Required(ErrorMessage = "phone must be filled.")]
+        [StringLength(40, MinimumLength = 3)]
+        public string Phone { get; set; } = string.Empty;
         [Range(0.0, 5.0, ErrorMessage = "rating minimum is 0, rating maximum is 5")]
         [Column(TypeName = "decimal(18,2)")]
         public decimal Rating { get; set; } = 0m;

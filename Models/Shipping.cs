@@ -7,14 +7,19 @@ namespace DSM.Models {
         [Required(ErrorMessage = "the order must be specified.")]
         public int OrderId { get; set; }
         public Order? Order { get; set; }
+        [Required(ErrorMessage = "carrier must be specified.")]
         public int? CarrierId { get; set; }
         public Carrier? Carrier { get; set; }
+        [Required(ErrorMessage = "delivery date must be specified.")]
         public DateTime? DeliveryDate { get; set; }
         public DateTime? ReceiptDate { get; set; }
+        [Range(0, double.MaxValue, ErrorMessage = "cost cannot be negative.")]
         [Column(TypeName = "decimal(18,2)")]
         public decimal Cost { get; set; } = 0m;
         public ShippingStatus Status { get; set; } = ShippingStatus.inPerparation;
-        public string? ShippingAddress { get; set; }
+        [Required(ErrorMessage = "shipping address must be filled.")]
+        [StringLength(250, MinimumLength = 3)]
+        public string ShippingAddress { get; set; } = string.Empty;
         public string? TrackingNumber { get; set; }
         public string? Remark { get; set; }
         [NotMapped]

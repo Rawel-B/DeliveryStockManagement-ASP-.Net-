@@ -3,12 +3,15 @@ using System.ComponentModel.DataAnnotations;
 namespace DSM.Models {
     public class User {
         public int Id { get; set; }
+        [Required(ErrorMessage = "username must be filled.")]
         [StringLength(30, MinimumLength = 3)]
         [RegularExpression("^[a-zA-Z0-9._-]+$", ErrorMessage = "username format is invalid.")]
         public string? Username { get; set; }
         public string? Password { get; set; }
+        [Required(ErrorMessage = "name must be filled.")]
         [StringLength(80, MinimumLength = 2)]
         public string? Name { get; set; }
+        [Required(ErrorMessage = "email must be filled.")]
         [EmailAddress]
         [StringLength(120)]
         public string? Email { get; set; }

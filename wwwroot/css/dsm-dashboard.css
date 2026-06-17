@@ -304,33 +304,37 @@ main, .container { color: var(--text); }
 @media (max-width: 720px) { .dashboard-kpis, .revenue-metrics, .fulfillment-summary, .fulfillment-chart { grid-template-columns: 1fr; } }
 
 .workspace-toast {
-  width: min(760px, 100%);
-  margin: 24px auto 0;
+  position: fixed;
+  top: 18px;
+  right: 22px;
+  z-index: 9999;
+  width: min(360px, calc(100vw - 32px));
   display: grid;
-  grid-template-columns: 42px minmax(0, 1fr) 34px;
+  grid-template-columns: 32px minmax(0, 1fr) 28px;
   align-items: center;
-  gap: 12px;
-  padding: 14px 16px;
-  border: 1px solid rgba(155, 0, 21, 0.72);
-  border-radius: 18px;
-  background: linear-gradient(180deg, rgba(122, 24, 35, 0.16), transparent 62%), rgba(10, 10, 10, 0.96);
-  box-shadow: var(--shadow);
+  gap: 10px;
+  padding: 10px 11px;
+  border: 1px solid rgba(155, 0, 21, 0.66);
+  border-radius: 14px;
+  background: rgba(10, 10, 10, 0.96);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.46);
 }
 .workspace-toast > i {
-  width: 42px;
-  height: 42px;
+  width: 32px;
+  height: 32px;
   display: grid;
   place-items: center;
   border: 1px solid rgba(155, 0, 21, 0.58);
   border-radius: 999px;
   color: #ffffff;
   background: rgba(79, 0, 9, 0.42);
+  font-size: 0.85rem;
 }
-.workspace-toast strong { display: block; color: var(--text); }
-.workspace-toast p { margin: 2px 0 0; color: var(--muted); }
+.workspace-toast strong { display: block; color: var(--text); font-size: 0.86rem; }
+.workspace-toast p { margin: 1px 0 0; color: var(--muted); font-size: 0.8rem; line-height: 1.32; }
 .workspace-toast button {
-  width: 34px;
-  height: 34px;
+  width: 28px;
+  height: 28px;
   display: grid;
   place-items: center;
   border: 1px solid var(--border);
@@ -801,4 +805,52 @@ main, .container { color: var(--text); }
   font-size: 0.88rem;
   font-weight: 760;
   text-transform: none;
+}
+
+
+/* List row drawers: closed by default, opened only when the row is clicked. */
+.dsm-list-panel .table-row { cursor: pointer; border-radius: 14px; }
+.dsm-list-panel .row-actions,
+.dsm-list-panel .row-actions .icon-button { cursor: default; }
+.dsm-list-panel .row-detail {
+  display: none;
+  border-color: var(--border-soft);
+  background: #0b0b0b;
+}
+.dsm-list-panel .row-shell.is-expanded .table-row {
+  border-radius: 14px 14px 0 0;
+  border-color: #3b4146;
+  background: #121212;
+}
+.dsm-list-panel .row-shell.is-expanded .row-detail { display: grid; }
+.dsm-list-panel .row-shell.is-expanded .row-chevron { transform: rotate(180deg); }
+.dsm-list-panel .row-chevron { transition: transform 160ms ease; }
+
+
+.state-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 24px;
+  padding: 0 10px;
+  border: 1px solid var(--border-soft);
+  border-radius: 999px;
+  color: var(--text);
+  background: rgba(15, 15, 15, 0.72);
+  font-size: 0.78rem;
+  font-weight: 800;
+  line-height: 1;
+}
+.state-chip.is-active {
+  border-color: rgba(154, 160, 166, 0.34);
+  background: rgba(231, 233, 234, 0.08);
+  color: var(--text);
+}
+.state-chip.is-inactive {
+  border-color: rgba(155, 0, 21, 0.72);
+  background: rgba(79, 0, 9, 0.54);
+  color: #f3c3c8;
+}
+.row-detail .state-chip {
+  width: fit-content;
 }

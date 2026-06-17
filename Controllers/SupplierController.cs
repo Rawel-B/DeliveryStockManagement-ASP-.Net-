@@ -59,14 +59,26 @@ public class SupplierController : Controller {
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create([Bind("Id,Name,Email,Phone,Address,IsActive,CreatedAt,UpdatedAt")] Supplier supplier) {
-        supplier.Email = DsmControllerUtilities.CleanNullable(supplier.Email)?.ToLowerInvariant();
+        supplier.Email = DsmControllerUtilities.Clean(supplier.Email).ToLowerInvariant();
+        supplier.Name = DsmControllerUtilities.Clean(supplier.Name);
+        supplier.Phone = DsmControllerUtilities.Clean(supplier.Phone);
+        supplier.Address = DsmControllerUtilities.Clean(supplier.Address);
+        if (string.IsNullOrWhiteSpace(supplier.Email)) {
+            ModelState.AddModelError(nameof(supplier.Email), "email must be filled.");
+        }
+        if (string.IsNullOrWhiteSpace(supplier.Phone)) {
+            ModelState.AddModelError(nameof(supplier.Phone), "phone must be filled.");
+        }
+        if (string.IsNullOrWhiteSpace(supplier.Address)) {
+            ModelState.AddModelError(nameof(supplier.Address), "address must be filled.");
+        }
         if (!string.IsNullOrWhiteSpace(supplier.Email) && await _context.Suppliers.AnyAsync(s => s.Email == supplier.Email)) {
             ModelState.AddModelError(nameof(supplier.Email), "a Supplier With This Email Already Exists.");
         }
         if (ModelState.IsValid) {
             supplier.Name = DsmControllerUtilities.Clean(supplier.Name);
-            supplier.Phone = DsmControllerUtilities.CleanNullable(supplier.Phone);
-            supplier.Address = DsmControllerUtilities.CleanNullable(supplier.Address);
+            supplier.Phone = DsmControllerUtilities.Clean(supplier.Phone);
+            supplier.Address = DsmControllerUtilities.Clean(supplier.Address);
             DsmControllerUtilities.StampNew(supplier);
             _context.Add(supplier);
             await _context.SaveChangesAsync();
@@ -98,7 +110,7 @@ public class SupplierController : Controller {
             return NotFound();
         }
 
-        supplier.Email = DsmControllerUtilities.CleanNullable(supplier.Email)?.ToLowerInvariant();
+        supplier.Email = DsmControllerUtilities.Clean(supplier.Email).ToLowerInvariant();
         if (!string.IsNullOrWhiteSpace(supplier.Email) && await _context.Suppliers.AnyAsync(s => s.Id != supplier.Id && s.Email == supplier.Email)) {
             ModelState.AddModelError(nameof(supplier.Email), "a Supplier With This Email Already Exists.");
         }
@@ -106,8 +118,8 @@ public class SupplierController : Controller {
         if (ModelState.IsValid) {
             try {
                 supplier.Name = DsmControllerUtilities.Clean(supplier.Name);
-                supplier.Phone = DsmControllerUtilities.CleanNullable(supplier.Phone);
-                supplier.Address = DsmControllerUtilities.CleanNullable(supplier.Address);
+                supplier.Phone = DsmControllerUtilities.Clean(supplier.Phone);
+                supplier.Address = DsmControllerUtilities.Clean(supplier.Address);
                 DsmControllerUtilities.StampUpdate(supplier);
                 _context.Update(supplier);
                 await _context.SaveChangesAsync();

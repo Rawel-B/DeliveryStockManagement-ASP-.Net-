@@ -3,11 +3,11 @@
 <section class="workspace-grid"><div class="form-backdrop inline-form-backdrop"><form asp-action="Create" class="workspace-form modal-form" novalidate>
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <div class="form-head"><a asp-action="Index" class="icon-button" data-tooltip="Back" aria-label="Back"><i class="pi pi-arrow-left"></i></a><div><h2>New User</h2><p>Manage users, roles and activation.</p></div></div>
-    <label><span>Username</span><input asp-for="Username" /></label>
-    <label><span>Name</span><input asp-for="Name" /></label>
-    <label><span>Email</span><input asp-for="Email" type="email" /></label>
+    <label><span>Username</span><input asp-for="Username" /><span asp-validation-for="Username" class="text-danger"></span></label>
+    <label><span>Name</span><input asp-for="Name" /><span asp-validation-for="Name" class="text-danger"></span></label>
+    <label><span>Email</span><input asp-for="Email" type="email" /><span asp-validation-for="Email" class="text-danger"></span></label>
     <label><span>Role</span><select asp-for="Role" asp-items="Html.GetEnumSelectList<DSM.Models.Role>()"></select></label>
-    <label><span>Password</span><input asp-for="Password" type="password" placeholder="Enter password" /></label>
+    <label><span>Password</span><input asp-for="Password" type="password" placeholder="Enter password" /><span asp-validation-for="Password" class="text-danger"></span></label>
     <label class="active-toggle"><input asp-for="IsActive" /><span></span><strong>Active</strong></label>
     <div class="form-actions"><a asp-action="Index" class="secondary-button">Cancel</a><button type="submit" class="primary-button">Create</button></div>
 </form></div></section>

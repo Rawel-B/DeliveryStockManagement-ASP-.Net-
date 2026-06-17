@@ -9,7 +9,8 @@ namespace DSM.Models {
         public Order? Order { get; set; }
         [Required(ErrorMessage = "the product is mandatory.")]
         public string ProductName { get; set; } = string.Empty;
-        public string? ProductRef { get; set; }
+        [Required(ErrorMessage = "product reference must be filled.")]
+        public string ProductRef { get; set; } = string.Empty;
         [Range(1, int.MaxValue, ErrorMessage = "cannot enter a quantity less than 1.")]
         public int Quantity { get; set; } = 1;
         [Range(0.01, double.MaxValue, ErrorMessage = "price per unit cannot be less than zero.")]

@@ -3,10 +3,12 @@ using System.ComponentModel.DataAnnotations;
 namespace DSM.Models {
     public class SupportTicket {
         public int Id { get; set; }
+        [Required(ErrorMessage = "subject must be filled.")]
         [StringLength(120, MinimumLength = 3)]
-        public string? Subject { get; set; }
+        public string Subject { get; set; } = string.Empty;
+        [Required(ErrorMessage = "description must be filled.")]
         [StringLength(2000, MinimumLength = 10)]
-        public string? Description { get; set; }
+        public string Description { get; set; } = string.Empty;
         public Category Category { get; set; } = Category.operations;
         public Priority Priority { get; set; } = Priority.normal;
         public Status Status { get; set; } = Status.open;

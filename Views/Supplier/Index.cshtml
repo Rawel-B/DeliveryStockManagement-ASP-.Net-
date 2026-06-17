@@ -6,7 +6,7 @@
 @foreach (var item in Model) {
         <div class="row-shell dsm-search-row"><article class="table-row"><div><strong>@Html.DisplayFor(modelItem => item.Name)</strong></div><div class="row-metrics">                            <span class="dsm-chip">@Html.DisplayFor(modelItem => item.Email)</span>
                             <span class="dsm-chip">@Html.DisplayFor(modelItem => item.Phone)</span></div><div class="row-actions"><a asp-action="Details" asp-route-id="@item.Id" class="icon-button" data-tooltip="Details"><i class="pi pi-eye"></i></a><a asp-action="Edit" asp-route-id="@item.Id" class="icon-button" data-tooltip="Edit"><i class="pi pi-pencil"></i></a><a asp-action="Delete" asp-route-id="@item.Id" class="icon-button danger-action" data-tooltip="Delete"><i class="pi pi-trash"></i></a></div><span class="row-chevron"><i class="pi pi-chevron-down"></i></span></article><section class="row-detail static-detail">                        <div><span>Address</span><strong>@Html.DisplayFor(modelItem => item.Address)</strong></div>
-                        <div><span>Active</span><strong>@Html.DisplayFor(modelItem => item.IsActive)</strong></div>
+                        <div><span>Active</span><strong class="state-chip @(item.IsActive ? "is-active" : "is-inactive")">@(item.IsActive ? "Active" : "Inactive")</strong></div>
                         <div><span>Orders</span><strong>@(item.Orders?.Count ?? 0)</strong></div></section></div>
 }
     </div> }

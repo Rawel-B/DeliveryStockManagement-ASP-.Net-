@@ -53,7 +53,11 @@ public class LocationController : Controller {
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create([Bind("Id,Name,Code,Description,CreatedAt,UpdatedAt")] Location location) {
         location.Name = DsmControllerUtilities.Clean(location.Name);
-        location.Code = DsmControllerUtilities.CleanNullable(location.Code);
+        location.Code = DsmControllerUtilities.Clean(location.Code);
+        if (string.IsNullOrWhiteSpace(location.Code)) {
+            ModelState.AddModelError(nameof(location.Code), "code must be filled.");
+        }
+        location.Code = DsmControllerUtilities.Clean(location.Code);
         location.Description = DsmControllerUtilities.CleanNullable(location.Description);
         if (await _context.Locations.AnyAsync(l => l.Name == location.Name)) {
             ModelState.AddModelError(nameof(location.Name), "Location With This Name Already Exists.");
@@ -89,12 +93,17 @@ public class LocationController : Controller {
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int? id, [Bind("Id,Name,Code,Description,CreatedAt,UpdatedAt")] Location location) {
+        location.Name = DsmControllerUtilities.Clean(location.Name);
+        location.Code = DsmControllerUtilities.Clean(location.Code);
+        if (string.IsNullOrWhiteSpace(location.Code)) {
+            ModelState.AddModelError(nameof(location.Code), "code must be filled.");
+        }
         if (id != location.Id) {
             return NotFound();
         }
 
         location.Name = DsmControllerUtilities.Clean(location.Name);
-        location.Code = DsmControllerUtilities.CleanNullable(location.Code);
+        location.Code = DsmControllerUtilities.Clean(location.Code);
         location.Description = DsmControllerUtilities.CleanNullable(location.Description);
         if (await _context.Locations.AnyAsync(l => l.Id != location.Id && l.Name == location.Name)) {
             ModelState.AddModelError(nameof(location.Name), "Location With This Name Already Exists.");

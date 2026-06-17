@@ -90,6 +90,14 @@ public class SupportTicketController : Controller {
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int? id, [Bind("Id,Subject,Description,Category,Priority,Status,RequesterId,RequesterName,RequesterEmail,AssignedUserId,AssignedUserName,CreatedAt,UpdatedAt")] SupportTicket supportticket) {
+        supportticket.Subject = DsmControllerUtilities.Clean(supportticket.Subject);
+        supportticket.Description = DsmControllerUtilities.Clean(supportticket.Description);
+        if (string.IsNullOrWhiteSpace(supportticket.Subject)) {
+            ModelState.AddModelError(nameof(supportticket.Subject), "subject must be filled.");
+        }
+        if (string.IsNullOrWhiteSpace(supportticket.Description)) {
+            ModelState.AddModelError(nameof(supportticket.Description), "description must be filled.");
+        }
         if (id != supportticket.Id) {
             return NotFound();
         }

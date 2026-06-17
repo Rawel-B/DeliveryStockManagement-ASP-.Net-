@@ -66,7 +66,7 @@ public class CarrierController : Controller {
     public async Task<IActionResult> Create([Bind("Id,Name,Phone,Rating,IsActive,CreatedAt,UpdatedAt")] Carrier carrier) {
         if (ModelState.IsValid) {
             carrier.Name = DsmControllerUtilities.Clean(carrier.Name);
-            carrier.Phone = DsmControllerUtilities.CleanNullable(carrier.Phone);
+            carrier.Phone = DsmControllerUtilities.Clean(carrier.Phone);
             DsmControllerUtilities.StampNew(carrier);
             _context.Add(carrier);
             await _context.SaveChangesAsync();
@@ -94,6 +94,11 @@ public class CarrierController : Controller {
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int? id, [Bind("Id,Name,Phone,Rating,IsActive,CreatedAt,UpdatedAt")] Carrier carrier) {
+        carrier.Name = DsmControllerUtilities.Clean(carrier.Name);
+        carrier.Phone = DsmControllerUtilities.Clean(carrier.Phone);
+        if (string.IsNullOrWhiteSpace(carrier.Phone)) {
+            ModelState.AddModelError(nameof(carrier.Phone), "phone must be filled.");
+        }
         if (id != carrier.Id) {
             return NotFound();
         }
@@ -101,7 +106,7 @@ public class CarrierController : Controller {
         if (ModelState.IsValid) {
             try {
                 carrier.Name = DsmControllerUtilities.Clean(carrier.Name);
-                carrier.Phone = DsmControllerUtilities.CleanNullable(carrier.Phone);
+                carrier.Phone = DsmControllerUtilities.Clean(carrier.Phone);
                 DsmControllerUtilities.StampUpdate(carrier);
                 _context.Update(carrier);
                 await _context.SaveChangesAsync();

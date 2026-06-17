@@ -37,6 +37,13 @@ document.addEventListener('click', function (event) {
         return;
     }
 
+
+    const expandableRow = event.target.closest('.dsm-list-panel .table-row');
+    if (expandableRow && !event.target.closest('a, button, input, select, textarea, label')) {
+        expandableRow.closest('.row-shell')?.classList.toggle('is-expanded');
+        return;
+    }
+
     const clearButton = event.target.closest('[data-dsm-clear]');
     if (clearButton) {
         const panel = clearButton.closest('[data-dsm-list]');

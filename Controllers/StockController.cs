@@ -53,14 +53,20 @@ public class StockController : Controller {
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create([Bind("Id,Product,ProductRef,LocationId,Location,Quantity,LastReceiptDate,CreatedAt,UpdatedAt")] Stock stock) {
         stock.Product = DsmControllerUtilities.Clean(stock.Product);
-        stock.ProductRef = DsmControllerUtilities.CleanNullable(stock.ProductRef);
+        stock.ProductRef = DsmControllerUtilities.Clean(stock.ProductRef);
+        if (string.IsNullOrWhiteSpace(stock.ProductRef)) {
+            ModelState.AddModelError(nameof(stock.ProductRef), "product reference must be filled.");
+        }
+        if (stock.LocationId == null) {
+            ModelState.AddModelError(nameof(stock.LocationId), "location must be specified.");
+        }
         if (!string.IsNullOrWhiteSpace(stock.ProductRef) && await _context.Stocks.AnyAsync(s => s.ProductRef == stock.ProductRef)) {
             ModelState.AddModelError(nameof(stock.ProductRef), "Stock With This Product Reference Already Exists.");
         }
         await FillLocation(stock);
         if (ModelState.IsValid) {
             stock.Quantity = Math.Max(stock.Quantity, 0);
-            if (stock.LastReceiptDate == null || stock.LastReceiptDate == default) {
+            if (stock.LastReceiptDate == default) {
                 stock.LastReceiptDate = DateTime.Now;
             }
             DsmControllerUtilities.StampNew(stock);
@@ -97,7 +103,13 @@ public class StockController : Controller {
         }
 
         stock.Product = DsmControllerUtilities.Clean(stock.Product);
-        stock.ProductRef = DsmControllerUtilities.CleanNullable(stock.ProductRef);
+        stock.ProductRef = DsmControllerUtilities.Clean(stock.ProductRef);
+        if (string.IsNullOrWhiteSpace(stock.ProductRef)) {
+            ModelState.AddModelError(nameof(stock.ProductRef), "product reference must be filled.");
+        }
+        if (stock.LocationId == null) {
+            ModelState.AddModelError(nameof(stock.LocationId), "location must be specified.");
+        }
         if (!string.IsNullOrWhiteSpace(stock.ProductRef) && await _context.Stocks.AnyAsync(s => s.Id != stock.Id && s.ProductRef == stock.ProductRef)) {
             ModelState.AddModelError(nameof(stock.ProductRef), "Stock With This Product Reference Already Exists.");
         }
@@ -105,9 +117,23 @@ public class StockController : Controller {
         await ValidateStockChange(stock.Id, stock.Product, stock.ProductRef, stock.Quantity);
 
         if (ModelState.IsValid) {
+            var existing = await _context.Stocks.FirstOrDefaultAsync(s => s.Id == stock.Id);
+            if (existing == null) {
+                return NotFound();
+            }
+
+            existing.Product = stock.Product;
+            existing.ProductRef = stock.ProductRef;
+            existing.LocationId = stock.LocationId;
+            existing.Location = stock.Location;
+            existing.Quantity = Math.Max(stock.Quantity, 0);
+
+            if (existing.LastReceiptDate == default) {
+                existing.LastReceiptDate = DateTime.Now;
+            }
+
             try {
-                DsmControllerUtilities.StampUpdate(stock);
-                _context.Update(stock);
+                DsmControllerUtilities.StampUpdate(existing);
                 await _context.SaveChangesAsync();
             } catch (DbUpdateConcurrencyException) {
                 if (!StockExists(stock.Id)) {
