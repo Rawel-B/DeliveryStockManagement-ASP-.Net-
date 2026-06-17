@@ -9,7 +9,6 @@
         <div class="table-head">
             <div>
                 <h2>Products</h2>
-                <p>Manage product lines, quantities and pricing.</p>
             </div>
 
             <div class="table-filters">
@@ -25,13 +24,7 @@
             </a>
         </div>
 
-        @if (!Model.Any()) {
-            <div class="empty-state">
-                <strong>No products found.</strong>
-                <span>Add a new record to begin.</span>
-                <a asp-action="Create" class="primary-button">New Product</a>
-            </div>
-        } else {
+        @if (!Model.Any()) { <div class="dsm-rows"></div> } else {
             <div class="dsm-rows">
 @foreach (var item in Model) {
                 <div class="row-shell dsm-search-row">
