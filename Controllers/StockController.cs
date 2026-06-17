@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using DSM.Models;
 using DSM.Data;
 
-[Authorize]
+[Authorize(Roles = "administrator,user")]
 public class StockController : Controller {
     private readonly ApplicationDatabaseContext _context;
 
@@ -15,13 +15,20 @@ public class StockController : Controller {
 
     // GET: STOCKS
     public async Task<IActionResult> Index(string? criteria) {
-        var stocks = _context.Stocks.AsQueryable();
+        await RepairLegacyStockRows();
+
+        var stocks = SafeStocksQuery().AsNoTracking().AsQueryable();
+
         if (!string.IsNullOrWhiteSpace(criteria)) {
             string value = criteria.Trim();
-            stocks = stocks.Where(s => s.Product.Contains(value) || (s.ProductRef != null && s.ProductRef.Contains(value)) || (s.Location != null && s.Location.Contains(value)));
+            stocks = stocks.Where(s =>
+                (s.Product != null && s.Product.Contains(value)) ||
+                (s.ProductRef != null && s.ProductRef.Contains(value)) ||
+                (s.Location != null && s.Location.Contains(value)));
         }
+
         var list = await stocks.OrderBy(s => s.Product).ToListAsync();
-        ApplyStockQuantities(list);
+        await ApplyStockQuantities(list);
         ViewBag.Criteria = criteria;
         return View(list);
     }
@@ -32,16 +39,19 @@ public class StockController : Controller {
             return NotFound();
         }
 
-        var stock = await _context.Stocks.FirstOrDefaultAsync(m => m.Id == id);
+        await RepairLegacyStockRows();
+
+        var stock = await SafeStocksQuery().AsNoTracking().FirstOrDefaultAsync(m => m.Id == id);
         if (stock == null) {
             return NotFound();
         }
-        ApplyStockQuantities(new List<Stock> { stock });
+        await ApplyStockQuantities(new List<Stock> { stock });
         return View(stock);
     }
 
     // GET: STOCKS/Create
     public async Task<IActionResult> Create() {
+        await RepairLegacyStockRows();
         await LoadLookups();
         return View();
     }
@@ -52,8 +62,14 @@ public class StockController : Controller {
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create([Bind("Id,Product,ProductRef,LocationId,Location,Quantity,LastReceiptDate,CreatedAt,UpdatedAt")] Stock stock) {
+        await RepairLegacyStockRows();
+
         stock.Product = DsmControllerUtilities.Clean(stock.Product);
         stock.ProductRef = DsmControllerUtilities.Clean(stock.ProductRef);
+
+        if (string.IsNullOrWhiteSpace(stock.Product)) {
+            ModelState.AddModelError(nameof(stock.Product), "product must be specified.");
+        }
         if (string.IsNullOrWhiteSpace(stock.ProductRef)) {
             ModelState.AddModelError(nameof(stock.ProductRef), "product reference must be filled.");
         }
@@ -63,7 +79,9 @@ public class StockController : Controller {
         if (!string.IsNullOrWhiteSpace(stock.ProductRef) && await _context.Stocks.AnyAsync(s => s.ProductRef == stock.ProductRef)) {
             ModelState.AddModelError(nameof(stock.ProductRef), "Stock With This Product Reference Already Exists.");
         }
+
         await FillLocation(stock);
+
         if (ModelState.IsValid) {
             stock.Quantity = Math.Max(stock.Quantity, 0);
             if (stock.LastReceiptDate == default) {
@@ -74,6 +92,7 @@ public class StockController : Controller {
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+
         await LoadLookups();
         return View(stock);
     }
@@ -84,7 +103,9 @@ public class StockController : Controller {
             return NotFound();
         }
 
-        var stock = await _context.Stocks.FindAsync(id);
+        await RepairLegacyStockRows();
+
+        var stock = await SafeStocksQuery().AsNoTracking().FirstOrDefaultAsync(s => s.Id == id);
         if (stock == null) {
             return NotFound();
         }
@@ -102,8 +123,14 @@ public class StockController : Controller {
             return NotFound();
         }
 
+        await RepairLegacyStockRows();
+
         stock.Product = DsmControllerUtilities.Clean(stock.Product);
         stock.ProductRef = DsmControllerUtilities.Clean(stock.ProductRef);
+
+        if (string.IsNullOrWhiteSpace(stock.Product)) {
+            ModelState.AddModelError(nameof(stock.Product), "product must be specified.");
+        }
         if (string.IsNullOrWhiteSpace(stock.ProductRef)) {
             ModelState.AddModelError(nameof(stock.ProductRef), "product reference must be filled.");
         }
@@ -113,6 +140,7 @@ public class StockController : Controller {
         if (!string.IsNullOrWhiteSpace(stock.ProductRef) && await _context.Stocks.AnyAsync(s => s.Id != stock.Id && s.ProductRef == stock.ProductRef)) {
             ModelState.AddModelError(nameof(stock.ProductRef), "Stock With This Product Reference Already Exists.");
         }
+
         await FillLocation(stock);
         await ValidateStockChange(stock.Id, stock.Product, stock.ProductRef, stock.Quantity);
 
@@ -144,6 +172,7 @@ public class StockController : Controller {
             }
             return RedirectToAction(nameof(Index));
         }
+
         await LoadLookups();
         return View(stock);
     }
@@ -154,11 +183,13 @@ public class StockController : Controller {
             return NotFound();
         }
 
-        var stock = await _context.Stocks.FirstOrDefaultAsync(m => m.Id == id);
+        await RepairLegacyStockRows();
+
+        var stock = await SafeStocksQuery().AsNoTracking().FirstOrDefaultAsync(m => m.Id == id);
         if (stock == null) {
             return NotFound();
         }
-        ApplyStockQuantities(new List<Stock> { stock });
+        await ApplyStockQuantities(new List<Stock> { stock });
         return View(stock);
     }
 
@@ -166,11 +197,13 @@ public class StockController : Controller {
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int? id) {
+        await RepairLegacyStockRows();
+
         var stock = await _context.Stocks.FindAsync(id);
         if (stock != null) {
             if (!await CanRemoveStock(stock)) {
                 ModelState.AddModelError(string.Empty, "Reserved Stock Cannot Be Reduced.");
-                ApplyStockQuantities(new List<Stock> { stock });
+                await ApplyStockQuantities(new List<Stock> { stock });
                 return View("Delete", stock);
             }
             _context.Stocks.Remove(stock);
@@ -189,39 +222,50 @@ public class StockController : Controller {
             stock.Location = null;
             return;
         }
+
         var location = await _context.Locations.FindAsync(stock.LocationId.Value);
         if (location == null) {
             ModelState.AddModelError(nameof(stock.LocationId), "Location With ID " + stock.LocationId + " Was Not Found.");
             return;
         }
+
         stock.Location = location.Name;
     }
 
     private async Task ValidateStockChange(int stockId, string product, string? productRef, int quantity) {
-        var stocks = await _context.Stocks.AsNoTracking().ToListAsync();
+        await RepairLegacyStockRows();
+
+        var stocks = await SafeStocksQuery().AsNoTracking().ToListAsync();
         var existing = stocks.FirstOrDefault(s => s.Id == stockId);
         string currentProduct = ProductStockKey(existing?.Product, existing?.ProductRef);
         string nextProduct = ProductStockKey(product, productRef);
         var totals = StockTotals(stocks);
+
         if (existing != null) {
             totals[currentProduct] = totals.GetValueOrDefault(currentProduct) - existing.Quantity;
         }
+
         totals[nextProduct] = totals.GetValueOrDefault(nextProduct) + quantity;
         await ValidateReservedTotals(totals, currentProduct, nextProduct);
     }
 
     private async Task<bool> CanRemoveStock(Stock stock) {
-        var stocks = await _context.Stocks.AsNoTracking().ToListAsync();
+        await RepairLegacyStockRows();
+
+        var stocks = await SafeStocksQuery().AsNoTracking().ToListAsync();
         var totals = StockTotals(stocks);
         string product = ProductStockKey(stock.Product, stock.ProductRef);
         totals[product] = totals.GetValueOrDefault(product) - stock.Quantity;
         return await ReservedTotalsAreValid(totals, product);
     }
 
-    private void ApplyStockQuantities(List<Stock> stocks) {
-        var allStocks = _context.Stocks.AsNoTracking().ToList();
+    private async Task ApplyStockQuantities(List<Stock> stocks) {
+        await RepairLegacyStockRows();
+
+        var allStocks = await SafeStocksQuery().AsNoTracking().ToListAsync();
         var totals = StockTotals(allStocks);
-        var reserved = ReservedProducts();
+        var reserved = await ReservedProductsAsync();
+
         foreach (var stock in stocks) {
             string product = ProductStockKey(stock.Product, stock.ProductRef);
             stock.ReservedQuantity = reserved.GetValueOrDefault(product);
@@ -237,11 +281,13 @@ public class StockController : Controller {
 
     private async Task<bool> ReservedTotalsAreValid(Dictionary<string, int> totals, params string[] products) {
         var reserved = await ReservedProductsAsync();
+
         foreach (string product in products.Where(p => !string.IsNullOrWhiteSpace(p)).Distinct()) {
             if (totals.GetValueOrDefault(product) < reserved.GetValueOrDefault(product)) {
                 return false;
             }
         }
+
         return true;
     }
 
@@ -252,19 +298,8 @@ public class StockController : Controller {
             .ToDictionary(g => g.Key, g => g.Sum(s => s.Quantity));
     }
 
-    private Dictionary<string, int> ReservedProducts() {
-        return _context.Orders
-            .Include(o => o.Products)
-            .Where(ReservesStock)
-            .SelectMany(o => o.Products)
-            .Where(p => !string.IsNullOrWhiteSpace(p.ProductName))
-            .GroupBy(p => ProductStockKey(p.ProductName, p.ProductRef))
-            .ToDictionary(g => g.Key, g => g.Sum(p => p.Quantity));
-    }
-
     private async Task<Dictionary<string, int>> ReservedProductsAsync() {
         var reservedProducts = await _context.Orders
-            .Include(o => o.Products)
             .Where(o => o.Status == OrderStatus.pendingApproval || o.Status == OrderStatus.validated || o.Status == OrderStatus.ongoing)
             .SelectMany(o => o.Products)
             .Where(p => !string.IsNullOrWhiteSpace(p.ProductName))
@@ -276,12 +311,76 @@ public class StockController : Controller {
             .ToDictionary(g => g.Key, g => g.Sum(p => p.Quantity));
     }
 
-    private string ProductStockKey(string? productName, string? productRef) {
-        return DsmControllerUtilities.ProductKey(productName) + "|" + DsmControllerUtilities.Clean(productRef).ToLower();
+    private IQueryable<Stock> SafeStocksQuery() {
+        return _context.Stocks.FromSqlRaw(@"
+SELECT
+    [Id],
+    ISNULL([Product], '') AS [Product],
+    ISNULL([ProductRef], '') AS [ProductRef],
+    ISNULL([LocationId], 0) AS [LocationId],
+    ISNULL([Location], '') AS [Location],
+    ISNULL([Quantity], 0) AS [Quantity],
+    ISNULL([LastReceiptDate], GETDATE()) AS [LastReceiptDate],
+    ISNULL([CreatedAt], GETDATE()) AS [CreatedAt],
+    ISNULL([UpdatedAt], GETDATE()) AS [UpdatedAt]
+FROM [dbo].[Stocks]");
     }
 
-    private bool ReservesStock(Order order) {
-        return order.Status == OrderStatus.pendingApproval || order.Status == OrderStatus.validated || order.Status == OrderStatus.ongoing;
+    private async Task RepairLegacyStockRows() {
+        await _context.Database.ExecuteSqlRawAsync(@"
+IF OBJECT_ID(N'[dbo].[Stocks]', N'U') IS NOT NULL
+BEGIN
+    IF COL_LENGTH('dbo.Stocks', 'Product') IS NOT NULL
+        EXEC(N'UPDATE [dbo].[Stocks] SET [Product] = '''' WHERE [Product] IS NULL');
+
+    IF COL_LENGTH('dbo.Stocks', 'ProductRef') IS NOT NULL
+        EXEC(N'UPDATE [dbo].[Stocks] SET [ProductRef] = '''' WHERE [ProductRef] IS NULL');
+
+    IF COL_LENGTH('dbo.Stocks', 'Quantity') IS NOT NULL
+        EXEC(N'UPDATE [dbo].[Stocks] SET [Quantity] = 0 WHERE [Quantity] IS NULL');
+
+    IF COL_LENGTH('dbo.Stocks', 'LastReceiptDate') IS NOT NULL
+        EXEC(N'UPDATE [dbo].[Stocks] SET [LastReceiptDate] = GETDATE() WHERE [LastReceiptDate] IS NULL');
+
+    IF COL_LENGTH('dbo.Stocks', 'CreatedAt') IS NOT NULL
+        EXEC(N'UPDATE [dbo].[Stocks] SET [CreatedAt] = GETDATE() WHERE [CreatedAt] IS NULL');
+
+    IF COL_LENGTH('dbo.Stocks', 'UpdatedAt') IS NOT NULL
+        EXEC(N'UPDATE [dbo].[Stocks] SET [UpdatedAt] = GETDATE() WHERE [UpdatedAt] IS NULL');
+
+    IF OBJECT_ID(N'[dbo].[Locations]', N'U') IS NOT NULL
+       AND COL_LENGTH('dbo.Stocks', 'LocationId') IS NOT NULL
+       AND EXISTS(SELECT 1 FROM [dbo].[Stocks] WHERE [LocationId] IS NULL)
+    BEGIN
+        IF NOT EXISTS(SELECT 1 FROM [dbo].[Locations] WHERE [Code] = 'UNASSIGNED')
+        BEGIN
+            INSERT INTO [dbo].[Locations] ([Name], [Code], [Description], [CreatedAt], [UpdatedAt])
+            VALUES ('Unassigned', 'UNASSIGNED', 'Auto-created fallback for legacy stock rows without a location.', GETDATE(), GETDATE());
+        END
+
+        DECLARE @FallbackLocationId INT = (SELECT TOP 1 [Id] FROM [dbo].[Locations] WHERE [Code] = 'UNASSIGNED');
+        UPDATE [dbo].[Stocks] SET [LocationId] = @FallbackLocationId WHERE [LocationId] IS NULL;
+    END
+
+    IF OBJECT_ID(N'[dbo].[Locations]', N'U') IS NOT NULL
+       AND COL_LENGTH('dbo.Stocks', 'Location') IS NOT NULL
+       AND COL_LENGTH('dbo.Stocks', 'LocationId') IS NOT NULL
+    BEGIN
+        UPDATE s
+        SET s.[Location] = ISNULL(l.[Name], '')
+        FROM [dbo].[Stocks] s
+        LEFT JOIN [dbo].[Locations] l ON s.[LocationId] = l.[Id]
+        WHERE s.[Location] IS NULL OR LTRIM(RTRIM(s.[Location])) = '';
+    END
+
+    IF COL_LENGTH('dbo.Stocks', 'Location') IS NOT NULL
+        EXEC(N'UPDATE [dbo].[Stocks] SET [Location] = '''' WHERE [Location] IS NULL');
+END
+");
+    }
+
+    private string ProductStockKey(string? productName, string? productRef) {
+        return DsmControllerUtilities.ProductKey(productName) + "|" + DsmControllerUtilities.Clean(productRef).ToLower();
     }
 
     private bool StockExists(int? id) {

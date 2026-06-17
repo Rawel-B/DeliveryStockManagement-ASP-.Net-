@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using DSM.Models;
 using DSM.Data;
 
-[Authorize(Roles = "administrator")]
+[Authorize]
 public class SupportTicketController : Controller {
     private readonly ApplicationDatabaseContext _context;
 
@@ -14,6 +14,7 @@ public class SupportTicketController : Controller {
     }
 
     // GET: SUPPORTTICKETS
+    [Authorize(Roles = "administrator")]
     public async Task<IActionResult> Index(string? criteria) {
         var tickets = _context.SupportTickets.AsQueryable();
         if (!string.IsNullOrWhiteSpace(criteria)) {
@@ -25,6 +26,7 @@ public class SupportTicketController : Controller {
     }
 
     // GET: SUPPORTTICKETS/Details/5
+    [Authorize(Roles = "administrator")]
     public async Task<IActionResult> Details(int? id) {
         if (id == null) {
             return NotFound();
@@ -71,6 +73,7 @@ public class SupportTicketController : Controller {
     }
 
     // GET: SUPPORTTICKETS/Edit/5
+    [Authorize(Roles = "administrator")]
     public async Task<IActionResult> Edit(int? id) {
         if (id == null) {
             return NotFound();
@@ -89,6 +92,7 @@ public class SupportTicketController : Controller {
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = "administrator")]
     public async Task<IActionResult> Edit(int? id, [Bind("Id,Subject,Description,Category,Priority,Status,RequesterId,RequesterName,RequesterEmail,AssignedUserId,AssignedUserName,CreatedAt,UpdatedAt")] SupportTicket supportticket) {
         supportticket.Subject = DsmControllerUtilities.Clean(supportticket.Subject);
         supportticket.Description = DsmControllerUtilities.Clean(supportticket.Description);
@@ -121,6 +125,7 @@ public class SupportTicketController : Controller {
     }
 
     // GET: SUPPORTTICKETS/Delete/5
+    [Authorize(Roles = "administrator")]
     public async Task<IActionResult> Delete(int? id) {
         if (id == null) {
             return NotFound();
@@ -136,6 +141,7 @@ public class SupportTicketController : Controller {
     // POST: SUPPORTTICKETS/Delete/5
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = "administrator")]
     public async Task<IActionResult> DeleteConfirmed(int? id) {
         var supportticket = await _context.SupportTickets.FindAsync(id);
         if (supportticket != null) {
@@ -147,6 +153,7 @@ public class SupportTicketController : Controller {
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = "administrator")]
     public async Task<IActionResult> UpdateStatus(int id, Status status, int? assignedUserId) {
         var ticket = await _context.SupportTickets.FindAsync(id);
         if (ticket == null) {

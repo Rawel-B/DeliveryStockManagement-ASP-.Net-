@@ -6,7 +6,6 @@
 <section class="workspace-grid wide-form">
     <div class="form-backdrop inline-form-backdrop">
         <form asp-action="Create" class="workspace-form modal-form wide-modal-form" novalidate>
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-head">
                 <a asp-action="Index" class="icon-button" data-tooltip="Back" aria-label="Back"><i class="pi pi-arrow-left"></i></a>
                 <div><h2>New Order</h2><p>Track orders, customers, suppliers and workflow status.</p></div>
@@ -73,8 +72,20 @@
                 const unitPrice = parseFloat(price.value || '0');
                 const available = parseInt((option && option.getAttribute('data-available')) || '0', 10);
                 const ref = (option && option.getAttribute('data-ref')) || '';
-                if (!productName || quantity < 1 || unitPrice <= 0 || quantity > available) {
-                    alert('Select a product from stock, enter a valid quantity, and set a positive price.');
+                if (!productName) {
+                    window.showDsmToast?.('Select a product from stock.', 'error');
+                    return;
+                }
+                if (quantity < 1) {
+                    window.showDsmToast?.('Enter a valid quantity.', 'error');
+                    return;
+                }
+                if (unitPrice <= 0) {
+                    window.showDsmToast?.('Set a positive price.', 'error');
+                    return;
+                }
+                if (quantity > available) {
+                    window.showDsmToast?.('Requested Quantity Exceeds Available Stock.', 'error');
                     return;
                 }
                 const index = lines.querySelectorAll('[data-product-line]').length;

@@ -35,6 +35,7 @@ if (!app.Environment.IsDevelopment()) {
     app.UseHsts();
 }
 
+await app.RepairLegacyStockRowsAsync();
 await app.SeedDefaultAdministrator();
 
 app.UseHttpsRedirection();

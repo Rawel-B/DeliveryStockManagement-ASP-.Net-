@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using DSM.Models;
 using DSM.Data;
 
-[Authorize]
+[Authorize(Roles = "administrator,manager")]
 public class CarrierController : Controller {
     private readonly ApplicationDatabaseContext _context;
 

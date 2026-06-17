@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using DSM.Models;
 using DSM.Data;
 
-[Authorize]
+[Authorize(Roles = "administrator,manager")]
 public class OrderController : Controller {
     private readonly ApplicationDatabaseContext _context;
 
@@ -52,7 +52,7 @@ public class OrderController : Controller {
     // GET: ORDERS/Create
     public async Task<IActionResult> Create() {
         await LoadLookups();
-        return View(new Order { OrderDate = DateTime.Now, Status = OrderStatus.pendingApproval, Products = new List<Product> { new Product() } });
+        return View(new Order { OrderDate = DateTime.Now, Status = OrderStatus.pendingApproval, Products = new List<Product>() });
     }
 
     // POST: ORDERS/Create
@@ -77,6 +77,7 @@ public class OrderController : Controller {
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+        AddOrderErrorToast();
         await LoadLookups();
         return View(order);
     }
@@ -131,6 +132,7 @@ public class OrderController : Controller {
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+        AddOrderErrorToast();
         await LoadLookups();
         return View(order);
     }
@@ -198,6 +200,18 @@ public class OrderController : Controller {
         DsmControllerUtilities.StampUpdate(order);
         await _context.SaveChangesAsync();
         return RedirectToAction(nameof(Details), new { id });
+    }
+
+    private void AddOrderErrorToast() {
+        var message = ModelState.Values
+            .SelectMany(value => value.Errors)
+            .Select(error => error.ErrorMessage)
+            .FirstOrDefault(error => !string.IsNullOrWhiteSpace(error));
+
+        if (!string.IsNullOrWhiteSpace(message)) {
+            TempData["ToastMessage"] = message;
+            TempData["ToastType"] = "error";
+        }
     }
 
     private async Task LoadLookups() {

@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using DSM.Models;
 using DSM.Data;
 
-[Authorize]
+[Authorize(Roles = "administrator,user")]
 public class LocationController : Controller {
     private readonly ApplicationDatabaseContext _context;
 

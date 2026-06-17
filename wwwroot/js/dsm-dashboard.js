@@ -136,3 +136,28 @@ function hideToast(toast) {
         toast.remove();
     }, 180);
 }
+
+function showDsmToast(message, type) {
+    if (!message) return;
+
+    document.querySelectorAll('[data-dsm-toast]').forEach(hideToast);
+
+    const toast = document.createElement('section');
+    const isError = type === 'error';
+    toast.className = 'workspace-toast' + (isError ? ' error-toast' : '');
+    toast.setAttribute('role', 'status');
+    toast.setAttribute('data-dsm-toast', '');
+
+    toast.innerHTML = '<i class="' + (isError ? 'pi pi-exclamation-triangle' : 'pi pi-check') + '"></i>' +
+        '<div><strong>' + (isError ? 'Error' : 'Success') + '</strong><p></p></div>' +
+        '<button type="button" data-toast-dismiss aria-label="Dismiss notification"><i class="pi pi-times"></i></button>';
+
+    toast.querySelector('p').textContent = message;
+    document.body.appendChild(toast);
+
+    setTimeout(function () {
+        hideToast(toast);
+    }, 3000);
+}
+
+window.showDsmToast = showDsmToast;

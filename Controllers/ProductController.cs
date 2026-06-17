@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using DSM.Models;
 using DSM.Data;
 
-[Authorize]
+[Authorize(Roles = "administrator")]
 public class ProductController : Controller {
     private readonly ApplicationDatabaseContext _context;
 

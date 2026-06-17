@@ -23,7 +23,7 @@ namespace DSM.Controllers {
         [AllowAnonymous]
         public IActionResult SignIn(string? returnUrl = null) {
             if (User.Identity?.IsAuthenticated == true) {
-                return RedirectToAction("Index", "Dashboard");
+                return RedirectToHomeByRole(User.FindFirst(ClaimTypes.Role)?.Value);
             }
             ViewBag.ReturnUrl = returnUrl;
             return View(new SignInViewModel());
@@ -58,7 +58,7 @@ namespace DSM.Controllers {
             if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl)) {
                 return Redirect(returnUrl);
             }
-            return RedirectToAction("Index", "Dashboard");
+            return RedirectToHomeByRole(GetValue(user, "Role")?.ToString());
         }
 
         [HttpGet]
@@ -259,6 +259,14 @@ namespace DSM.Controllers {
         private void SetToast(string message, string type) {
             TempData["ToastMessage"] = message;
             TempData["ToastType"] = type;
+        }
+
+        private IActionResult RedirectToHomeByRole(string? role) {
+            if (string.Equals(role, "user", StringComparison.OrdinalIgnoreCase)) {
+                return RedirectToAction("Index", "Shipping");
+            }
+
+            return RedirectToAction("Index", "Dashboard");
         }
 
         private static object? GetValue(object target, string propertyName) {

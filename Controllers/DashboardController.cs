@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace DSM.Controllers {
-    [Authorize]
+    [Authorize(Roles = "administrator,manager")]
     public class DashboardController : Controller {
         private readonly ApplicationDatabaseContext _context;
 
