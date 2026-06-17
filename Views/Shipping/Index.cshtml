@@ -1,5 +1,101 @@
 @model IEnumerable<DSM.Models.Shipping>
-@{ ViewData["Title"] = "Deliveries"; }
-<section class="workspace-grid"><section class="workspace-table dsm-list-panel" data-dsm-list><div class="table-head"><div><h2>Deliveries</h2></div><div class="table-filters"><span class="filter-leading-icon"><i class="pi pi-search"></i></span><input class="dsm-search-input" type="search" placeholder="Search deliveries" /><button class="icon-button" type="button" data-dsm-clear data-tooltip="Clear"><i class="pi pi-times"></i></button></div><a asp-action="Create" class="icon-button create-action" data-tooltip="New Delivery"><i class="pi pi-plus"></i></a></div>
-@if (!Model.Any()) { <div class="dsm-rows"></div> } else { <div class="dsm-rows">@foreach (var item in Model) { <div class="row-shell dsm-search-row"><article class="table-row"><div><strong>@(item.Order?.OrderNumber ?? item.OrderNumber)</strong><span>@(item.Carrier?.Name ?? "No carrier") - @item.Status</span></div><div class="row-metrics"><span class="dsm-chip">@item.DeliveryDate</span><span class="dsm-chip">@item.Cost.ToString("0.00")</span></div><div class="row-actions"><a asp-action="Details" asp-route-id="@item.Id" class="icon-button" data-tooltip="Details"><i class="pi pi-eye"></i></a><a asp-action="Edit" asp-route-id="@item.Id" class="icon-button" data-tooltip="Edit"><i class="pi pi-pencil"></i></a><a asp-action="Delete" asp-route-id="@item.Id" class="icon-button danger-action" data-tooltip="Delete"><i class="pi pi-trash"></i></a></div><span class="row-chevron"><i class="pi pi-chevron-down"></i></span></article><section class="row-detail static-detail"><div><span>Tracking</span><strong>@(item.TrackingNumber ?? "No tracking")</strong></div><div><span>Address</span><strong>@(item.ShippingAddress ?? "No address")</strong></div><div><span>Receipt</span><strong>@item.ReceiptDate</strong></div><div><span>Remark</span><strong>@(item.Remark ?? "No remark")</strong></div></section></div> }</div> }
-</section></section>
+@{
+    ViewData["Title"] = "Deliveries";
+    var workflow = DsmControllerUtilities.ShippingWorkflowStatuses();
+}
+
+<section class="workspace-grid">
+    <section class="workspace-table dsm-list-panel" data-dsm-list>
+        <div class="table-head">
+            <div><h2>Deliveries</h2></div>
+            <div class="table-filters">
+                <span class="filter-leading-icon"><i class="pi pi-search"></i></span>
+                <input class="dsm-search-input" type="search" placeholder="Search deliveries" />
+                <button class="icon-button" type="button" data-dsm-clear data-tooltip="Clear"><i class="pi pi-times"></i></button>
+            </div>
+            <a asp-action="Create" class="icon-button create-action" data-tooltip="New Delivery"><i class="pi pi-plus"></i></a>
+        </div>
+
+        @if (!Model.Any()) {
+            <div class="dsm-rows"></div>
+        } else {
+            <div class="dsm-rows">
+                @foreach (var item in Model) {
+                    var nextStatus = DsmControllerUtilities.NextShippingStatus(item.Status);
+                    <div class="row-shell dsm-search-row">
+                        <article class="table-row phase-row">
+                            <div>
+                                <strong>@(item.Order?.OrderNumber ?? item.OrderNumber)</strong>
+                                <span>@(item.Carrier?.Name ?? "No carrier") - @DsmControllerUtilities.DisplayLabel(item.Status)</span>
+                            </div>
+
+                            <div class="order-status-stack">
+                                <span class="@DsmControllerUtilities.StatusPillClass(item.Status)">@DsmControllerUtilities.DisplayLabel(item.Status)</span>
+                                <div class="phase-control" aria-label="Delivery status workflow">
+                                    <div class="phase-track">
+                                        @foreach (var status in workflow) {
+                                            <span class="@DsmControllerUtilities.PhaseStepClass(item.Status, status, workflow)">
+                                                <i></i>
+                                                <small>@DsmControllerUtilities.DisplayLabel(status)</small>
+                                            </span>
+                                        }
+                                    </div>
+                                    <div class="phase-actions">
+                                        @if (nextStatus != null) {
+                                            <form asp-action="SetShippingStatus" method="post" class="inline-phase-form">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="id" value="@item.Id" />
+                                                <input type="hidden" name="status" value="@nextStatus" />
+                                                <button class="phase-action" type="submit">
+                                                    <i class="@DsmControllerUtilities.ShippingNextActionIcon(item.Status)"></i>
+                                                    <span>@DsmControllerUtilities.ShippingNextActionLabel(item.Status)</span>
+                                                </button>
+                                            </form>
+                                        }
+                                        @if (DsmControllerUtilities.ShippingCanFail(item.Status)) {
+                                            <form asp-action="SetShippingStatus" method="post" class="inline-phase-form">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="id" value="@item.Id" />
+                                                <input type="hidden" name="status" value="failed" />
+                                                <button class="phase-action danger-action" type="submit">
+                                                    <i class="pi pi-times"></i>
+                                                    <span>Mark Failed</span>
+                                                </button>
+                                            </form>
+                                        }
+                                        @if (DsmControllerUtilities.ShippingCanReturn(item.Status)) {
+                                            <form asp-action="SetShippingStatus" method="post" class="inline-phase-form">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="id" value="@item.Id" />
+                                                <input type="hidden" name="status" value="returned" />
+                                                <button class="phase-action" type="submit">
+                                                    <i class="pi pi-replay"></i>
+                                                    <span>Return</span>
+                                                </button>
+                                            </form>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row-actions">
+                                <a asp-action="Details" asp-route-id="@item.Id" class="icon-button" data-tooltip="Details"><i class="pi pi-eye"></i></a>
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="icon-button" data-tooltip="Edit"><i class="pi pi-pencil"></i></a>
+                                <a asp-action="Delete" asp-route-id="@item.Id" class="icon-button danger-action" data-tooltip="Delete"><i class="pi pi-trash"></i></a>
+                            </div>
+                            <span class="row-chevron"><i class="pi pi-chevron-down"></i></span>
+                        </article>
+
+                        <section class="row-detail static-detail">
+                            <div><span>Status</span><strong class="@DsmControllerUtilities.StatusPillClass(item.Status)">@DsmControllerUtilities.DisplayLabel(item.Status)</strong></div>
+                            <div><span>Tracking</span><strong>@(item.TrackingNumber ?? "No tracking")</strong></div>
+                            <div><span>Address</span><strong>@(item.ShippingAddress ?? "No address")</strong></div>
+                            <div><span>Receipt</span><strong>@item.ReceiptDate</strong></div>
+                            <div><span>Remark</span><strong>@(item.Remark ?? "No remark")</strong></div>
+                        </section>
+                    </div>
+                }
+            </div>
+        }
+    </section>
+</section>

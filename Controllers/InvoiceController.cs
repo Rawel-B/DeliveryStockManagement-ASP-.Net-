@@ -152,13 +152,16 @@ public class InvoiceController : Controller {
         }
         string? error = ValidateStatusChange(invoice.Status, status);
         if (error != null) {
-            TempData["Error"] = error;
-            return RedirectToAction(nameof(Details), new { id });
+            TempData["ToastMessage"] = error;
+            TempData["ToastType"] = "error";
+            return RedirectToAction(nameof(Index));
         }
         invoice.Status = status;
         DsmControllerUtilities.StampUpdate(invoice);
         await _context.SaveChangesAsync();
-        return RedirectToAction(nameof(Details), new { id });
+        TempData["ToastMessage"] = "Invoice moved to " + DsmControllerUtilities.DisplayLabel(status) + ".";
+        TempData["ToastType"] = "success";
+        return RedirectToAction(nameof(Index));
     }
 
     private async Task LoadLookups() {

@@ -175,13 +175,16 @@ public class OrderController : Controller {
             return NotFound();
         }
         if (order.Status != OrderStatus.pendingApproval) {
-            TempData["Error"] = "Only Pending Approval Orders Can Be Validated.";
-            return RedirectToAction(nameof(Details), new { id });
+            TempData["ToastMessage"] = "Only Pending Approval Orders Can Be Validated.";
+            TempData["ToastType"] = "error";
+            return RedirectToAction(nameof(Index));
         }
         order.Status = OrderStatus.validated;
         DsmControllerUtilities.StampUpdate(order);
         await _context.SaveChangesAsync();
-        return RedirectToAction(nameof(Details), new { id });
+        TempData["ToastMessage"] = "Order validated.";
+        TempData["ToastType"] = "success";
+        return RedirectToAction(nameof(Index));
     }
 
     [HttpPost]
@@ -193,13 +196,16 @@ public class OrderController : Controller {
         }
         string? error = ValidateStatusChange(order.Status, status);
         if (error != null) {
-            TempData["Error"] = error;
-            return RedirectToAction(nameof(Details), new { id });
+            TempData["ToastMessage"] = error;
+            TempData["ToastType"] = "error";
+            return RedirectToAction(nameof(Index));
         }
         order.Status = status;
         DsmControllerUtilities.StampUpdate(order);
         await _context.SaveChangesAsync();
-        return RedirectToAction(nameof(Details), new { id });
+        TempData["ToastMessage"] = "Order moved to " + DsmControllerUtilities.DisplayLabel(status) + ".";
+        TempData["ToastType"] = "success";
+        return RedirectToAction(nameof(Index));
     }
 
     private void AddOrderErrorToast() {

@@ -5,7 +5,7 @@
             <input type="hidden" asp-for="Id" />
     <div class="form-head"><a asp-action="Index" class="icon-button" data-tooltip="Back" aria-label="Back"><i class="pi pi-arrow-left"></i></a><div><h2>Update Invoice</h2><p>Create payment records against validated orders.</p></div></div>
     <label><span>Order</span><select asp-for="OrderId" asp-items="ViewBag.Orders"><option value="">Select order</option></select><span asp-validation-for="OrderId" class="text-danger"></span></label>
-    <label><span>Method</span><select asp-for="Method" asp-items="Html.GetEnumSelectList<DSM.Models.InvoicingMethod>()"></select><span asp-validation-for="Method" class="text-danger"></span></label>
+    <label><span>Method</span><select asp-for="Method" asp-items="DsmControllerUtilities.EnumSelectList<DSM.Models.InvoicingMethod>(Model.Method)"></select><span asp-validation-for="Method" class="text-danger"></span></label>
     <label><span>Amount</span><input asp-for="Amount" type="number" min="0.01" step="0.01" /><span asp-validation-for="Amount" class="text-danger"></span></label>
     <label><span>Transaction reference</span><input asp-for="TransactionRef" placeholder="Auto-generated if empty" /></label>
     <label><span>Remark</span><textarea asp-for="Remark" placeholder="Enter remark"></textarea></label>

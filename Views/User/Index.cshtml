@@ -25,7 +25,7 @@
                                 <span>@item.Name - @item.Email</span>
                             </div>
                             <div class="row-metrics">
-                                <span class="status-pill">@item.Role</span>
+                                <span class="status-pill">@DsmControllerUtilities.DisplayLabel(item.Role)</span>
                                 <span class="state-chip @(item.IsActive ? "is-active" : "is-inactive")">@(item.IsActive ? "Active" : "Inactive")</span>
                             </div>
                             <div class="row-actions">
@@ -38,7 +38,7 @@
                         <section class="row-detail static-detail">
                             <div><span>Name</span><strong>@item.Name</strong></div>
                             <div><span>Email</span><strong>@item.Email</strong></div>
-                            <div><span>Role</span><strong>@item.Role</strong></div>
+                            <div><span>Role</span><strong>@DsmControllerUtilities.DisplayLabel(item.Role)</strong></div>
                             <div><span>Active</span><strong class="state-chip @(item.IsActive ? "is-active" : "is-inactive")">@(item.IsActive ? "Active" : "Inactive")</strong></div>
                         </section>
                     </div>

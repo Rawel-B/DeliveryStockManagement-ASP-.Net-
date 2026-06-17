@@ -33,7 +33,7 @@
                 </div>
                 <div>
                     <span>@Html.DisplayNameFor(model => model.Status)</span>
-                    <strong class="status-pill">@Html.DisplayFor(model => model.Status)</strong>
+                    <strong class="@DsmControllerUtilities.StatusPillClass(Model.Status)">@DsmControllerUtilities.DisplayLabel(Model.Status)</strong>
                 </div>
                 <div>
                     <span>@Html.DisplayNameFor(model => model.ShippingAddress)</span>

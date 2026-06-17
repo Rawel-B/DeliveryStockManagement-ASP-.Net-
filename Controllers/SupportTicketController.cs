@@ -42,7 +42,7 @@ public class SupportTicketController : Controller {
     // GET: SUPPORTTICKETS/Create
     public async Task<IActionResult> Create() {
         await LoadLookups();
-        return View();
+        return View(new SupportTicket());
     }
 
     // POST: SUPPORTTICKETS/Create
@@ -66,7 +66,12 @@ public class SupportTicketController : Controller {
             DsmControllerUtilities.StampNew(supportticket);
             _context.Add(supportticket);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            TempData["ToastMessage"] = "Ticket created.";
+            TempData["ToastType"] = "success";
+            if (User.IsInRole("administrator")) {
+                return RedirectToAction(nameof(Index));
+            }
+            return RedirectToAction("Index", "Shipping");
         }
         await LoadLookups();
         return View(supportticket);

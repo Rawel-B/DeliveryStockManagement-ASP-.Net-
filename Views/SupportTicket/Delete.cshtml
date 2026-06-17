@@ -21,15 +21,15 @@
                 </div>
                 <div>
                     <span>@Html.DisplayNameFor(model => model.Category)</span>
-                    <strong class="status-pill">@Html.DisplayFor(model => model.Category)</strong>
+                    <strong class="status-pill">@DsmControllerUtilities.DisplayLabel(Model.Category)</strong>
                 </div>
                 <div>
                     <span>@Html.DisplayNameFor(model => model.Priority)</span>
-                    <strong class="status-pill">@Html.DisplayFor(model => model.Priority)</strong>
+                    <strong class="status-pill">@DsmControllerUtilities.DisplayLabel(Model.Priority)</strong>
                 </div>
                 <div>
                     <span>@Html.DisplayNameFor(model => model.Status)</span>
-                    <strong class="status-pill">@Html.DisplayFor(model => model.Status)</strong>
+                    <strong class="@DsmControllerUtilities.StatusPillClass(Model.Status)">@DsmControllerUtilities.DisplayLabel(Model.Status)</strong>
                 </div>
                 <div>
                     <span>@Html.DisplayNameFor(model => model.RequesterId)</span>

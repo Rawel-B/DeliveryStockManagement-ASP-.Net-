@@ -34,7 +34,7 @@ public class UserController : Controller {
 
     // GET: USERS/Create
     public IActionResult Create() {
-        return View();
+        return View(new User());
     }
 
     // POST: USERS/Create

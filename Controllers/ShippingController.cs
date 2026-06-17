@@ -42,9 +42,9 @@ public class ShippingController : Controller {
     }
 
     // GET: SHIPPINGS/Create
-    public async Task<IActionResult> Create() {
+    public async Task<IActionResult> Create(int? orderId) {
         await LoadLookups();
-        return View(new Shipping { DeliveryDate = DateTime.Now });
+        return View(new Shipping { OrderId = orderId ?? 0, DeliveryDate = DateTime.Now });
     }
 
     // POST: SHIPPINGS/Create
@@ -199,8 +199,9 @@ public class ShippingController : Controller {
         }
         string? error = ValidateStatusChange(shipping.Status, status);
         if (error != null) {
-            TempData["Error"] = error;
-            return RedirectToAction(nameof(Details), new { id });
+            TempData["ToastMessage"] = error;
+            TempData["ToastType"] = "error";
+            return RedirectToAction(nameof(Index));
         }
         bool shouldDeductStock = shipping.Status != ShippingStatus.delivered && status == ShippingStatus.delivered;
         shipping.Status = status;
@@ -217,7 +218,9 @@ public class ShippingController : Controller {
             }
         }
         await _context.SaveChangesAsync();
-        return RedirectToAction(nameof(Details), new { id });
+        TempData["ToastMessage"] = "Delivery moved to " + DsmControllerUtilities.DisplayLabel(status) + ".";
+        TempData["ToastType"] = "success";
+        return RedirectToAction(nameof(Index));
     }
 
     private async Task LoadLookups() {

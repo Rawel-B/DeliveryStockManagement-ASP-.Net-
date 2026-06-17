@@ -5,9 +5,9 @@
     <input type="hidden" asp-for="Id" />
     <div class="form-head"><a asp-action="Index" class="icon-button" data-tooltip="Back" aria-label="Back"><i class="pi pi-arrow-left"></i></a><div><h2>Update Ticket</h2><p>Manage support, access and account activation tickets.</p></div></div>
     <label><span>Subject</span><input asp-for="Subject" /><span asp-validation-for="Subject" class="text-danger"></span></label>
-    <label><span>Category</span><select asp-for="Category" asp-items="Html.GetEnumSelectList<DSM.Models.Category>()"></select></label>
-    <label><span>Priority</span><select asp-for="Priority" asp-items="Html.GetEnumSelectList<DSM.Models.Priority>()"></select></label>
-    <label><span>Status</span><select asp-for="Status" asp-items="Html.GetEnumSelectList<DSM.Models.Status>()"></select></label>
+    <label><span>Category</span><select asp-for="Category" asp-items="DsmControllerUtilities.EnumSelectList<DSM.Models.Category>(Model.Category)"></select></label>
+    <label><span>Priority</span><select asp-for="Priority" asp-items="DsmControllerUtilities.EnumSelectList<DSM.Models.Priority>(Model.Priority)"></select></label>
+    <label><span>Status</span><select asp-for="Status" asp-items="DsmControllerUtilities.EnumSelectList<DSM.Models.Status>(Model.Status)"></select></label>
     <label><span>Assigned user</span><select asp-for="AssignedUserId" asp-items="ViewBag.Users"><option value="">Unassigned</option></select></label>
     <label><span>Description</span><textarea asp-for="Description"></textarea><span asp-validation-for="Description" class="text-danger"></span></label>
     <div class="form-actions"><a asp-action="Index" class="secondary-button">Cancel</a><button type="submit" class="primary-button">Update</button></div>
