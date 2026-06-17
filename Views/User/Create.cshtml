@@ -8,7 +8,7 @@
     <label><span>Email</span><input asp-for="Email" type="email" /></label>
     <label><span>Role</span><select asp-for="Role" asp-items="Html.GetEnumSelectList<DSM.Models.Role>()"></select></label>
     <label><span>Password</span><input asp-for="Password" type="password" placeholder="Enter password" /></label>
-    <label class="toggle-line"><input asp-for="IsActive" /><span>Active</span></label>
+    <label class="active-toggle"><input asp-for="IsActive" /><span></span><strong>Active</strong></label>
     <div class="form-actions"><a asp-action="Index" class="secondary-button">Cancel</a><button type="submit" class="primary-button">Create</button></div>
 </form></div></section>
 @section Scripts { @{await Html.RenderPartialAsync("_ValidationScriptsPartial");} }

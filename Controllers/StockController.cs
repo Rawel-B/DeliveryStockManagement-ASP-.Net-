@@ -102,7 +102,7 @@ public class StockController : Controller {
             ModelState.AddModelError(nameof(stock.ProductRef), "Stock With This Product Reference Already Exists.");
         }
         await FillLocation(stock);
-        await ValidateStockChange(stock.Id, stock.Product, stock.Quantity);
+        await ValidateStockChange(stock.Id, stock.Product, stock.ProductRef, stock.Quantity);
 
         if (ModelState.IsValid) {
             try {
@@ -171,11 +171,11 @@ public class StockController : Controller {
         stock.Location = location.Name;
     }
 
-    private async Task ValidateStockChange(int stockId, string product, int quantity) {
+    private async Task ValidateStockChange(int stockId, string product, string? productRef, int quantity) {
         var stocks = await _context.Stocks.AsNoTracking().ToListAsync();
         var existing = stocks.FirstOrDefault(s => s.Id == stockId);
-        string currentProduct = DsmControllerUtilities.ProductKey(existing?.Product);
-        string nextProduct = DsmControllerUtilities.ProductKey(product);
+        string currentProduct = ProductStockKey(existing?.Product, existing?.ProductRef);
+        string nextProduct = ProductStockKey(product, productRef);
         var totals = StockTotals(stocks);
         if (existing != null) {
             totals[currentProduct] = totals.GetValueOrDefault(currentProduct) - existing.Quantity;
@@ -187,7 +187,7 @@ public class StockController : Controller {
     private async Task<bool> CanRemoveStock(Stock stock) {
         var stocks = await _context.Stocks.AsNoTracking().ToListAsync();
         var totals = StockTotals(stocks);
-        string product = DsmControllerUtilities.ProductKey(stock.Product);
+        string product = ProductStockKey(stock.Product, stock.ProductRef);
         totals[product] = totals.GetValueOrDefault(product) - stock.Quantity;
         return await ReservedTotalsAreValid(totals, product);
     }
@@ -197,7 +197,7 @@ public class StockController : Controller {
         var totals = StockTotals(allStocks);
         var reserved = ReservedProducts();
         foreach (var stock in stocks) {
-            string product = DsmControllerUtilities.ProductKey(stock.Product);
+            string product = ProductStockKey(stock.Product, stock.ProductRef);
             stock.ReservedQuantity = reserved.GetValueOrDefault(product);
             stock.AvailableQuantity = Math.Max(totals.GetValueOrDefault(product) - stock.ReservedQuantity, 0);
         }
@@ -220,15 +220,38 @@ public class StockController : Controller {
     }
 
     private Dictionary<string, int> StockTotals(List<Stock> stocks) {
-        return stocks.Where(s => !string.IsNullOrWhiteSpace(s.Product)).GroupBy(s => DsmControllerUtilities.ProductKey(s.Product)).ToDictionary(g => g.Key, g => g.Sum(s => s.Quantity));
+        return stocks
+            .Where(s => !string.IsNullOrWhiteSpace(s.Product))
+            .GroupBy(s => ProductStockKey(s.Product, s.ProductRef))
+            .ToDictionary(g => g.Key, g => g.Sum(s => s.Quantity));
     }
 
     private Dictionary<string, int> ReservedProducts() {
-        return _context.Orders.Include(o => o.Products).Where(ReservesStock).SelectMany(o => o.Products).Where(p => !string.IsNullOrWhiteSpace(p.ProductName)).GroupBy(p => DsmControllerUtilities.ProductKey(p.ProductName)).ToDictionary(g => g.Key, g => g.Sum(p => p.Quantity));
+        return _context.Orders
+            .Include(o => o.Products)
+            .Where(ReservesStock)
+            .SelectMany(o => o.Products)
+            .Where(p => !string.IsNullOrWhiteSpace(p.ProductName))
+            .GroupBy(p => ProductStockKey(p.ProductName, p.ProductRef))
+            .ToDictionary(g => g.Key, g => g.Sum(p => p.Quantity));
     }
 
     private async Task<Dictionary<string, int>> ReservedProductsAsync() {
-        return await _context.Orders.Include(o => o.Products).Where(o => o.Status == OrderStatus.pendingApproval || o.Status == OrderStatus.validated || o.Status == OrderStatus.ongoing).SelectMany(o => o.Products).Where(p => !string.IsNullOrWhiteSpace(p.ProductName)).GroupBy(p => p.ProductName.Trim().ToLower()).ToDictionaryAsync(g => g.Key, g => g.Sum(p => p.Quantity));
+        var reservedProducts = await _context.Orders
+            .Include(o => o.Products)
+            .Where(o => o.Status == OrderStatus.pendingApproval || o.Status == OrderStatus.validated || o.Status == OrderStatus.ongoing)
+            .SelectMany(o => o.Products)
+            .Where(p => !string.IsNullOrWhiteSpace(p.ProductName))
+            .Select(p => new { p.ProductName, p.ProductRef, p.Quantity })
+            .ToListAsync();
+
+        return reservedProducts
+            .GroupBy(p => ProductStockKey(p.ProductName, p.ProductRef))
+            .ToDictionary(g => g.Key, g => g.Sum(p => p.Quantity));
+    }
+
+    private string ProductStockKey(string? productName, string? productRef) {
+        return DsmControllerUtilities.ProductKey(productName) + "|" + DsmControllerUtilities.Clean(productRef).ToLower();
     }
 
     private bool ReservesStock(Order order) {

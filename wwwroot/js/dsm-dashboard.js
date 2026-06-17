@@ -1,6 +1,14 @@
 document.addEventListener('input', function (event) {
     if (!event.target.classList.contains('dsm-search-input')) return;
-    filterList(event.target.closest('[data-dsm-list]'));
+    const panel = event.target.closest('[data-dsm-list]');
+    filterList(panel);
+    updateClearButton(panel);
+});
+
+document.addEventListener('change', function (event) {
+    if (!event.target.closest('.table-filters')) return;
+    const panel = event.target.closest('[data-dsm-list]');
+    updateClearButton(panel);
 });
 
 document.addEventListener('click', function (event) {
@@ -13,10 +21,7 @@ document.addEventListener('click', function (event) {
     }
 
     if (!event.target.closest('[data-account-menu]')) {
-        document.querySelectorAll('[data-account-menu].is-open').forEach(function (menu) {
-            menu.classList.remove('is-open');
-            menu.querySelector('[data-account-toggle]')?.setAttribute('aria-expanded', 'false');
-        });
+        closeAccountMenus();
     }
 
     const iconButton = event.target.closest('[data-profile-icon-option]');
@@ -37,13 +42,24 @@ document.addEventListener('click', function (event) {
         const panel = clearButton.closest('[data-dsm-list]');
         const input = panel?.querySelector('.dsm-search-input');
         if (input) input.value = '';
+        panel?.querySelectorAll('.table-filters select').forEach(function (select) {
+            if (select.name && !select.hasAttribute('data-keep-on-clear')) select.value = '';
+        });
         filterList(panel);
+        updateClearButton(panel);
         return;
     }
 
     const dismissToast = event.target.closest('[data-toast-dismiss]');
     if (dismissToast) {
-        dismissToast.closest('[data-dsm-toast]')?.remove();
+        hideToast(dismissToast.closest('[data-dsm-toast]'));
+    }
+});
+
+document.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape') {
+        closeAccountMenus();
+        document.querySelectorAll('[data-dsm-toast]').forEach(hideToast);
     }
 });
 
@@ -58,13 +74,24 @@ document.addEventListener('DOMContentLoaded', function () {
     const input = document.querySelector('[data-profile-icon-input]');
     if (input) input.value = savedIcon;
 
-    const toast = document.querySelector('[data-dsm-toast]');
-    if (toast) {
+    document.querySelectorAll('[data-dsm-list]').forEach(function (panel) {
+        updateClearButton(panel);
+        filterList(panel);
+    });
+
+    document.querySelectorAll('[data-dsm-toast]').forEach(function (toast) {
         setTimeout(function () {
-            toast.remove();
-        }, 4500);
-    }
+            hideToast(toast);
+        }, 3000);
+    });
 });
+
+function closeAccountMenus() {
+    document.querySelectorAll('[data-account-menu].is-open').forEach(function (menu) {
+        menu.classList.remove('is-open');
+        menu.querySelector('[data-account-toggle]')?.setAttribute('aria-expanded', 'false');
+    });
+}
 
 function setProfileIcon(icon) {
     const safeIcon = icon || 'pi-user';
@@ -79,4 +106,26 @@ function filterList(panel) {
     panel.querySelectorAll('.dsm-search-row').forEach(function (row) {
         row.style.display = row.innerText.toLowerCase().includes(search) ? '' : 'none';
     });
+}
+
+function updateClearButton(panel) {
+    if (!panel) return;
+    const searchValue = (panel.querySelector('.dsm-search-input')?.value || '').trim();
+    const selectHasValue = Array.from(panel.querySelectorAll('.table-filters select')).some(function (select) {
+        return (select.value || '').trim().length > 0;
+    });
+    const shouldShow = searchValue.length > 0 || selectHasValue;
+    panel.querySelectorAll('[data-dsm-clear]').forEach(function (button) {
+        button.classList.toggle('is-hidden', !shouldShow);
+        button.setAttribute('aria-hidden', shouldShow ? 'false' : 'true');
+        button.tabIndex = shouldShow ? 0 : -1;
+    });
+}
+
+function hideToast(toast) {
+    if (!toast) return;
+    toast.classList.add('is-hiding');
+    setTimeout(function () {
+        toast.remove();
+    }, 180);
 }

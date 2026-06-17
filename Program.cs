@@ -1,4 +1,5 @@
 using DSM.Data;
+using DSM.Filters;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +15,7 @@ builder.Services.AddDbContext<ApplicationDatabaseContext>(options =>
 builder.Services.AddRazorPages();
 builder.Services.AddControllersWithViews(options => {
     options.Filters.Add(new AuthorizeFilter());
+    options.Filters.Add(new DsmActionToastFilter());
 });
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

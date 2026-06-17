@@ -41,10 +41,7 @@
                 <span asp-validation-for="Address" class="text-danger"></span>
             </label>
 
-            <label class="toggle-line">
-                <input asp-for="IsActive" />
-                <span>Active</span>
-            </label>
+            <label class="active-toggle"><input asp-for="IsActive" /><span></span><strong>Active</strong></label>
 
             <div class="form-actions">
                 <a asp-action="Index" class="secondary-button">Cancel</a>
