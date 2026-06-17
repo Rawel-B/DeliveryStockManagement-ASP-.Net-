@@ -80,13 +80,13 @@
                     <h1>@ViewData["Title"]</h1>
                 </div>
                 <div class="header-actions">
-                    <div class="account-menu">
-                        <a class="account-button" href="/Profile" aria-label="Profile" data-tooltip="Profile">
-                            <i class="pi pi-user"></i>
-                        </a>
-                        <section class="account-dropdown" aria-label="Profile menu">
+                    <div class="account-menu" data-account-menu>
+                        <button class="account-button" type="button" aria-label="Open profile menu" data-tooltip="Profile" aria-expanded="false" data-account-toggle>
+                            <i class="pi pi-user" data-profile-icon-current></i>
+                        </button>
+                        <section class="account-dropdown" aria-label="Profile menu" data-account-dropdown>
                             <div class="account-dropdown-head">
-                                <span class="profile-avatar small-profile-avatar"><i class="pi pi-user"></i></span>
+                                <span class="profile-avatar small-profile-avatar"><i class="pi pi-user" data-profile-icon-current></i></span>
                                 <div>
                                     <strong>@displayName</strong>
                                     <span class="account-role">@role</span>

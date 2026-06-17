@@ -76,7 +76,8 @@ namespace DSM.Controllers {
                 Name = user.Name ?? string.Empty,
                 Email = user.Email ?? string.Empty,
                 Role = user.Role.ToString(),
-                IsActive = user.IsActive
+                IsActive = user.IsActive,
+                ProfileIcon = User.FindFirst("ProfileIcon")?.Value ?? "pi-user"
             };
         }
 
@@ -87,7 +88,8 @@ namespace DSM.Controllers {
                 new("DisplayName", user.Name ?? user.Username ?? string.Empty),
                 new(ClaimTypes.Email, user.Email ?? string.Empty),
                 new(ClaimTypes.Role, user.Role.ToString()),
-                new("IsActive", user.IsActive.ToString())
+                new("IsActive", user.IsActive.ToString()),
+                new("ProfileIcon", Request.Form["ProfileIcon"].FirstOrDefault() ?? "pi-user")
             };
             ClaimsIdentity identity = new(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity));

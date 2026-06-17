@@ -87,22 +87,16 @@ namespace DSM.Data {
 
         private void StampEntities() {
             DateTime now = DateTime.Now;
-
             foreach (var entry in ChangeTracker.Entries()) {
                 if (entry.State == EntityState.Added) {
                     if (entry.Properties.Any(property => property.Metadata.Name == "CreatedAt")) {
                         var property = entry.Property("CreatedAt");
-
-                        if (property.CurrentValue is null || property.CurrentValue is DateTime date && date == default) {
-                            property.CurrentValue = now;
-                        }
+                        if (property.CurrentValue is null || property.CurrentValue is DateTime date && date == default) property.CurrentValue = now;
                     }
-
                     if (entry.Properties.Any(property => property.Metadata.Name == "UpdatedAt")) {
                         entry.Property("UpdatedAt").CurrentValue = now;
                     }
                 }
-
                 if (entry.State == EntityState.Modified && entry.Properties.Any(property => property.Metadata.Name == "UpdatedAt")) {
                     entry.Property("UpdatedAt").CurrentValue = now;
                 }

@@ -1,12 +1,13 @@
 @model DSM.ViewModels.ProfileViewModel
 @{
     ViewData["Title"] = "Profile";
+    var iconOptions = new[] { "pi-user", "pi-id-card", "pi-briefcase", "pi-shield", "pi-box" };
 }
 
 <section class="profile-page">
     <article class="profile-card">
         <div class="profile-overview">
-            <span class="profile-avatar"><i class="pi @Model.ProfileIcon"></i></span>
+            <span class="profile-avatar"><i class="pi @Model.ProfileIcon" data-profile-icon-current></i></span>
             <div>
                 <h2>@Model.Name</h2>
                 <p>@Model.Username</p>
@@ -24,7 +25,7 @@
         </div>
     </article>
 
-    <form asp-action="Index" method="post" class="profile-form profile-editor" novalidate>
+    <form asp-action="Index" method="post" class="profile-form profile-editor" data-profile-form novalidate>
         <div class="profile-head">
             <div>
                 <span>Account</span>
@@ -40,40 +41,47 @@
         <input asp-for="Id" type="hidden" />
         <input asp-for="Role" type="hidden" />
         <input asp-for="IsActive" type="hidden" />
-        <input asp-for="ProfileIcon" type="hidden" />
+        <input asp-for="ProfileIcon" type="hidden" data-profile-icon-input />
 
         <label>
             <span>Name</span>
-            <input asp-for="Name" required />
+            <input asp-for="Name" autocomplete="name" required />
         </label>
         <span asp-validation-for="Name" class="field-error"></span>
 
         <label>
             <span>Username</span>
-            <input asp-for="Username" required />
+            <input asp-for="Username" autocomplete="username" required />
         </label>
         <span asp-validation-for="Username" class="field-error"></span>
 
         <label>
             <span>Email</span>
-            <input asp-for="Email" required />
+            <input asp-for="Email" type="email" autocomplete="email" required />
         </label>
         <span asp-validation-for="Email" class="field-error"></span>
 
         <label>
             <span>New password</span>
-            <input asp-for="Password" />
+            <input asp-for="Password" type="password" autocomplete="new-password" placeholder="Leave empty to keep current password" />
         </label>
         <span asp-validation-for="Password" class="field-error"></span>
 
         <div class="icon-picker">
             <span>Icon</span>
             <div>
-                <button class="icon-button active-icon" type="button"><i class="pi @Model.ProfileIcon"></i></button>
+                @foreach (var icon in iconOptions) {
+                    <button class="icon-button @(Model.ProfileIcon == icon ? "active-icon" : "")" type="button" data-profile-icon-option="@icon" aria-label="Use @icon" data-tooltip="Use icon">
+                        <i class="pi @icon"></i>
+                    </button>
+                }
             </div>
         </div>
 
-        <button class="primary-button" type="submit">Save profile</button>
+        <div class="form-actions profile-actions">
+            <a class="secondary-button" href="/Dashboard">Cancel</a>
+            <button class="primary-button" type="submit">Save profile</button>
+        </div>
     </form>
 </section>
 
