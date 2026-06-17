@@ -39,17 +39,22 @@
                     <span>@Html.DisplayNameFor(model => model.Remark)</span>
                     <strong>@Html.DisplayFor(model => model.Remark)</strong>
                 </div>
-                <div>
-                    <span>@Html.DisplayNameFor(model => model.Products)</span>
-                    <strong>@Html.DisplayFor(model => model.Products)</strong>
-                </div>
-                <div>
-                    <span>@Html.DisplayNameFor(model => model.ShippingIds)</span>
-                    <strong>@Html.DisplayFor(model => model.ShippingIds)</strong>
-                </div>
-                <div>
-                    <span>@Html.DisplayNameFor(model => model.InvoiceIds)</span>
-                    <strong>@Html.DisplayFor(model => model.InvoiceIds)</strong>
+                <div class="detail-wide">
+                    <span>Products</span>
+                    @if (Model.Products == null || !Model.Products.Any()) {
+                        <strong>No products</strong>
+                    } else {
+                        <div class="product-lines details-product-lines">
+                            @foreach (var product in Model.Products) {
+                                <div class="product-line">
+                                    <span>@product.ProductName</span>
+                                    <span>@(string.IsNullOrWhiteSpace(product.ProductRef) ? "No reference" : product.ProductRef)</span>
+                                    <span>@product.Quantity x @product.PricePerUnit.ToString("0.00")</span>
+                                    <span>@product.SubTotal.ToString("0.00")</span>
+                                </div>
+                            }
+                        </div>
+                    }
                 </div>
                 <div>
                     <span>@Html.DisplayNameFor(model => model.CreatedAt)</span>

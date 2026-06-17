@@ -1,105 +1,15 @@
 @model DSM.Models.SupportTicket
-
-@{
-    ViewData["Title"] = "Update SupportTicket";
-}
-
-<section class="workspace-grid">
-    <div class="form-backdrop inline-form-backdrop">
-        <form asp-action="Edit" class="workspace-form modal-form" novalidate>
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-head">
-                <a asp-action="Index" class="icon-button" data-tooltip="Back" aria-label="Back">
-                    <i class="pi pi-arrow-left"></i>
-                </a>
-                <div>
-                    <h2>Update SupportTicket</h2>
-                    <p>Manage support tickets, categories, priorities and status.</p>
-                </div>
-            </div>
-
-                        <input type="hidden" asp-for="Id" />
-
-                        <label>
-                            <span>@Html.DisplayNameFor(model => model.Subject)</span>
-                            <input asp-for="Subject" placeholder="Enter subject" />
-                            <span asp-validation-for="Subject" class="text-danger"></span>
-                        </label>
-
-                        <label>
-                            <span>@Html.DisplayNameFor(model => model.Description)</span>
-                            <textarea asp-for="Description" placeholder="Enter description"></textarea>
-                            <span asp-validation-for="Description" class="text-danger"></span>
-                        </label>
-
-                        <label>
-                            <span>@Html.DisplayNameFor(model => model.Category)</span>
-                            <input asp-for="Category" placeholder="Enter category" />
-                            <span asp-validation-for="Category" class="text-danger"></span>
-                        </label>
-
-                        <label>
-                            <span>@Html.DisplayNameFor(model => model.Priority)</span>
-                            <input asp-for="Priority" placeholder="Enter priority" />
-                            <span asp-validation-for="Priority" class="text-danger"></span>
-                        </label>
-
-                        <label>
-                            <span>@Html.DisplayNameFor(model => model.Status)</span>
-                            <input asp-for="Status" placeholder="Enter status" />
-                            <span asp-validation-for="Status" class="text-danger"></span>
-                        </label>
-
-                        <label>
-                            <span>@Html.DisplayNameFor(model => model.RequesterId)</span>
-                            <input asp-for="RequesterId" type="number" step="any" placeholder="Enter requesterid" />
-                            <span asp-validation-for="RequesterId" class="text-danger"></span>
-                        </label>
-
-                        <label>
-                            <span>@Html.DisplayNameFor(model => model.RequesterName)</span>
-                            <input asp-for="RequesterName" placeholder="Enter requestername" />
-                            <span asp-validation-for="RequesterName" class="text-danger"></span>
-                        </label>
-
-                        <label>
-                            <span>@Html.DisplayNameFor(model => model.RequesterEmail)</span>
-                            <input asp-for="RequesterEmail" placeholder="Enter requesteremail" />
-                            <span asp-validation-for="RequesterEmail" class="text-danger"></span>
-                        </label>
-
-                        <label>
-                            <span>@Html.DisplayNameFor(model => model.AssignedUserId)</span>
-                            <input asp-for="AssignedUserId" type="number" step="any" placeholder="Enter assigneduserid" />
-                            <span asp-validation-for="AssignedUserId" class="text-danger"></span>
-                        </label>
-
-                        <label>
-                            <span>@Html.DisplayNameFor(model => model.AssignedUserName)</span>
-                            <input asp-for="AssignedUserName" placeholder="Enter assignedusername" />
-                            <span asp-validation-for="AssignedUserName" class="text-danger"></span>
-                        </label>
-
-                        <label>
-                            <span>@Html.DisplayNameFor(model => model.CreatedAt)</span>
-                            <input asp-for="CreatedAt" placeholder="Enter createdat" />
-                            <span asp-validation-for="CreatedAt" class="text-danger"></span>
-                        </label>
-
-                        <label>
-                            <span>@Html.DisplayNameFor(model => model.UpdatedAt)</span>
-                            <input asp-for="UpdatedAt" placeholder="Enter updatedat" />
-                            <span asp-validation-for="UpdatedAt" class="text-danger"></span>
-                        </label>
-
-            <div class="form-actions">
-                <a asp-action="Index" class="secondary-button">Cancel</a>
-                <button type="submit" class="primary-button">Save</button>
-            </div>
-        </form>
-    </div>
-</section>
-
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
+@{ ViewData["Title"] = "Update Ticket"; }
+<section class="workspace-grid"><div class="form-backdrop inline-form-backdrop"><form asp-action="Edit" class="workspace-form modal-form" novalidate>
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" asp-for="Id" />
+    <div class="form-head"><a asp-action="Index" class="icon-button" data-tooltip="Back" aria-label="Back"><i class="pi pi-arrow-left"></i></a><div><h2>Update Ticket</h2><p>Manage support, access and account activation tickets.</p></div></div>
+    <label><span>Subject</span><input asp-for="Subject" /></label>
+    <label><span>Category</span><select asp-for="Category" asp-items="Html.GetEnumSelectList<DSM.Models.Category>()"></select></label>
+    <label><span>Priority</span><select asp-for="Priority" asp-items="Html.GetEnumSelectList<DSM.Models.Priority>()"></select></label>
+    <label><span>Status</span><select asp-for="Status" asp-items="Html.GetEnumSelectList<DSM.Models.Status>()"></select></label>
+    <label><span>Assigned user</span><select asp-for="AssignedUserId" asp-items="ViewBag.Users"><option value="">Unassigned</option></select></label>
+    <label><span>Description</span><textarea asp-for="Description"></textarea></label>
+    <div class="form-actions"><a asp-action="Index" class="secondary-button">Cancel</a><button type="submit" class="primary-button">Update</button></div>
+</form></div></section>
+@section Scripts { @{await Html.RenderPartialAsync("_ValidationScriptsPartial");} }

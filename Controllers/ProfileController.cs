@@ -71,7 +71,7 @@ namespace DSM.Controllers {
 
         private ProfileViewModel ToViewModel(User user) {
             return new ProfileViewModel {
-                Id = user.Id,
+                Id = (user?.Id).GetValueOrDefault().ToString(),
                 Username = user.Username ?? string.Empty,
                 Name = user.Name ?? string.Empty,
                 Email = user.Email ?? string.Empty,

@@ -1,0 +1,42 @@
+@model DSM.Models.Carrier
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+@* Generated scaffolded Details view kept and restyled to mirror the original Angular confirmation/details cards. *@
+<section class="workspace-grid">
+    <article class="confirm-toast details-toast">
+        <span>Generated record details</span>
+        <h2>Details Carrier</h2>
+        
+
+        <section class="row-detail static-detail">
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.Name)</span>
+                    <strong>@Html.DisplayFor(model => model.Name)</strong>
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.Phone)</span>
+                    <strong>@Html.DisplayFor(model => model.Phone)</strong>
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.Rating)</span>
+                    <strong>@Html.DisplayFor(model => model.Rating)</strong>
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.IsActive)</span>
+                    <strong>@Html.DisplayFor(model => model.IsActive)</strong>
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.ShippingIds)</span>
+                    <strong>@Html.DisplayFor(model => model.ShippingIds)</strong>
+                </div>
+        </section>
+
+            <div class="form-actions">
+                <a asp-action="Edit" asp-route-id="@Model?.Id" class="primary-button">Edit</a>
+                <a asp-action="Index" class="secondary-button">Back to List</a>
+            </div>
+    </article>
+</section>

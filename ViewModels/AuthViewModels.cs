@@ -7,7 +7,14 @@ namespace DSM.ViewModels {
         [Required]
         [DataType(DataType.Password)]
         public string Password { get; set; } = string.Empty;
-        public bool Remember { get; set; }
+        public bool Remember { get; set; } = true;
+        public bool LoginFailed { get; set; }
+        [EmailAddress, StringLength(120)]
+        public string? TicketEmail { get; set; }
+        public string TicketCategory { get; set; } = "access";
+        [StringLength(2000)]
+        public string? TicketDescription { get; set; }
+        public string? TicketMessage { get; set; }
     }
 
     public class SignUpViewModel {
@@ -37,7 +44,7 @@ namespace DSM.ViewModels {
     }
 
     public class ProfileViewModel {
-        public int Id { get; set; }
+        public string? Id { get; set; }
         [Required, StringLength(30, MinimumLength = 3)]
         [RegularExpression("^[a-zA-Z0-9._-]+$")]
         public string Username { get; set; } = string.Empty;

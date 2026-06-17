@@ -1,0 +1,93 @@
+@model IEnumerable<DSM.Models.Carrier>
+
+@{
+    ViewData["Title"] = "Carriers";
+}
+
+@* Generated scaffolded Index view kept and restyled to mirror the original Angular dashboard carriers section. *@
+<section class="workspace-grid">
+    <section class="workspace-table dashboard-card">
+        <div class="table-head">
+            <div>
+                <h2>Carriers</h2>
+                <p>Manage delivery carriers, ratings and activity status.</p>
+            </div>
+
+            <form asp-action="Index" method="get" class="table-filters">
+                <input name="search" value="@ViewBag.Search" placeholder="Search carriers" />
+                <button class="icon-button" type="submit" aria-label="Search Carriers" data-tooltip="Search">
+                    <i class="pi pi-truck"></i>
+                </button>
+                <a asp-action="Index" class="icon-button" aria-label="Clear filter" data-tooltip="Clear">
+                    <i class="pi pi-times"></i>
+                </a>
+            </form>
+
+            <a asp-action="Create" class="icon-button create-action" aria-label="New Carrier" data-tooltip="New Carrier">
+                <i class="pi pi-plus"></i>
+            </a>
+        </div>
+
+        @if (!Model.Any()) {
+            <article class="empty-state">
+                <strong>No carriers found.</strong>
+                <span>Create the first record to test the generated CRUD flow.</span>
+            </article>
+        } else {
+            @foreach (var item in Model) {
+                <div class="row-shell">
+                    <article class="table-row">
+                        <div>
+                            <strong>@Html.DisplayFor(modelItem => item.Name)</strong>
+                            <span>@Html.DisplayFor(modelItem => item.Phone)</span>
+                            <span>@Html.DisplayFor(modelItem => item.Rating)</span>
+                        </div>
+
+                        @if (item.IsActive) {
+                            <span class="status-pill status-good">Active</span>
+                        } else {
+                            <span class="status-pill">Inactive</span>
+                        }
+
+                        <div class="row-actions">
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="icon-button" aria-label="Edit" data-tooltip="Edit">
+                                <i class="pi pi-pencil"></i>
+                            </a>
+                            <a asp-action="Details" asp-route-id="@item.Id" class="icon-button" aria-label="Details" data-tooltip="Details">
+                                <i class="pi pi-eye"></i>
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="icon-button danger-action" aria-label="Delete" data-tooltip="Delete">
+                                <i class="pi pi-trash"></i>
+                            </a>
+                        </div>
+
+                        <span class="row-chevron"><i class="pi pi-chevron-down"></i></span>
+                    </article>
+
+                    <section class="row-detail">
+                    <div>
+                        <span>@Html.DisplayNameFor(model => model.Name)</span>
+                        <strong>@Html.DisplayFor(modelItem => item.Name)</strong>
+                    </div>
+                    <div>
+                        <span>@Html.DisplayNameFor(model => model.Phone)</span>
+                        <strong>@Html.DisplayFor(modelItem => item.Phone)</strong>
+                    </div>
+                    <div>
+                        <span>@Html.DisplayNameFor(model => model.Rating)</span>
+                        <strong>@Html.DisplayFor(modelItem => item.Rating)</strong>
+                    </div>
+                    <div>
+                        <span>@Html.DisplayNameFor(model => model.IsActive)</span>
+                        <strong>@Html.DisplayFor(modelItem => item.IsActive)</strong>
+                    </div>
+                    <div>
+                        <span>@Html.DisplayNameFor(model => model.ShippingIds)</span>
+                        <strong>@Html.DisplayFor(modelItem => item.ShippingIds)</strong>
+                    </div>
+                    </section>
+                </div>
+            }
+        }
+    </section>
+</section>

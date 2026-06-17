@@ -1,100 +1,13 @@
 @model IEnumerable<DSM.Models.Carrier>
-
-@{
-    ViewData["Title"] = "Carriers";
-}
-
-<section class="workspace-grid">
-    <section class="workspace-table dsm-list-panel" data-dsm-list>
-        <div class="table-head">
-            <div>
-                <h2>Carriers</h2>
-                <p>Manage delivery carriers, ratings and activity status.</p>
-            </div>
-
-            <div class="table-filters">
-                <span class="filter-leading-icon" aria-hidden="true"><i class="pi pi-search"></i></span>
-                <input class="dsm-search-input" type="search" placeholder="Search carriers" aria-label="Search carriers" />
-                <button class="icon-button" type="button" data-dsm-clear data-tooltip="Clear" aria-label="Clear search">
-                    <i class="pi pi-times"></i>
-                </button>
-            </div>
-
-            <a asp-action="Create" class="icon-button create-action" data-tooltip="New Carrier" aria-label="New Carrier">
-                <i class="pi pi-plus"></i>
-            </a>
-        </div>
-
-        @if (!Model.Any()) {
-            <div class="empty-state">
-                <strong>No carriers found.</strong>
-                <span>Add a new record to begin.</span>
-                <a asp-action="Create" class="primary-button">New Carrier</a>
-            </div>
-        } else {
-            <div class="dsm-rows">
+@{ ViewData["Title"] = "Carriers"; }
+<section class="workspace-grid"><section class="workspace-table dsm-list-panel" data-dsm-list>
+    <div class="table-head"><div><h2>Carriers</h2><p>Delivery partners and activity.</p></div><div class="table-filters"><span class="filter-leading-icon"><i class="pi pi-search"></i></span><input class="dsm-search-input" type="search" placeholder="Search carriers" /><button class="icon-button" type="button" data-dsm-clear data-tooltip="Clear"><i class="pi pi-times"></i></button></div><a asp-action="Create" class="icon-button create-action" data-tooltip="New Carrier" aria-label="New Carrier"><i class="pi pi-plus"></i></a></div>
+    @if (!Model.Any()) { <div class="empty-state"><strong>No carriers found.</strong><span>Add a new record to begin.</span><a asp-action="Create" class="primary-button">New Carrier</a></div> } else { <div class="dsm-rows">
 @foreach (var item in Model) {
-                <div class="row-shell dsm-search-row">
-                    <article class="table-row">
-                        <div>
-                            <strong>@Html.DisplayFor(modelItem => item.Name)</strong>
-                            <span>@Html.DisplayFor(modelItem => item.Phone)</span>
-                        </div>
-
-                        <div class="row-metrics">
-                            <span class="dsm-chip"><span class="status-pill status-rating">@Html.DisplayFor(modelItem => item.Rating)/5</span></span>
-                            <span class="dsm-chip">@if (item.IsActive == true) {
-                                <span class="status-pill status-good">Active</span>
-                            } else {
-                                <span class="status-pill">Inactive</span>
-                            }</span>
-                            <span class="dsm-chip">@Html.DisplayFor(modelItem => item.ShippingIds)</span>
-                        </div>
-
-                        <div class="row-actions">
-                            <a asp-action="Details" asp-route-id="@item.Id" class="icon-button" data-tooltip="Details" aria-label="Details">
-                                <i class="pi pi-eye"></i>
-                            </a>
-                            <a asp-action="Edit" asp-route-id="@item.Id" class="icon-button" data-tooltip="Edit" aria-label="Edit">
-                                <i class="pi pi-pencil"></i>
-                            </a>
-                            <a asp-action="Delete" asp-route-id="@item.Id" class="icon-button danger-action" data-tooltip="Delete" aria-label="Delete">
-                                <i class="pi pi-trash"></i>
-                            </a>
-                        </div>
-
-                        <span class="row-chevron"><i class="pi pi-chevron-down"></i></span>
-                    </article>
-
-                    <section class="row-detail static-detail">
-                        <div>
-                            <span>@Html.DisplayNameFor(model => model.Name)</span>
-                            <strong>@Html.DisplayFor(modelItem => item.Name)</strong>
-                        </div>
-                        <div>
-                            <span>@Html.DisplayNameFor(model => model.Phone)</span>
-                            <strong>@Html.DisplayFor(modelItem => item.Phone)</strong>
-                        </div>
-                        <div>
-                            <span>@Html.DisplayNameFor(model => model.Rating)</span>
-                            <strong><span class="status-pill status-rating">@Html.DisplayFor(modelItem => item.Rating)/5</span></strong>
-                        </div>
-                        <div>
-                            <span>@Html.DisplayNameFor(model => model.IsActive)</span>
-                            <strong>@if (item.IsActive == true) {
-                                <span class="status-pill status-good">Active</span>
-                            } else {
-                                <span class="status-pill">Inactive</span>
-                            }</strong>
-                        </div>
-                        <div>
-                            <span>@Html.DisplayNameFor(model => model.ShippingIds)</span>
-                            <strong>@Html.DisplayFor(modelItem => item.ShippingIds)</strong>
-                        </div>
-                    </section>
-                </div>
+        <div class="row-shell dsm-search-row"><article class="table-row"><div><strong>@Html.DisplayFor(modelItem => item.Name)</strong><span>Delivery partners and activity.</span></div><div class="row-metrics">                            <span class="dsm-chip">@Html.DisplayFor(modelItem => item.Phone)</span>
+                            <span class="dsm-chip">@Html.DisplayFor(modelItem => item.Rating)</span></div><div class="row-actions"><a asp-action="Details" asp-route-id="@item.Id" class="icon-button" data-tooltip="Details"><i class="pi pi-eye"></i></a><a asp-action="Edit" asp-route-id="@item.Id" class="icon-button" data-tooltip="Edit"><i class="pi pi-pencil"></i></a><a asp-action="Delete" asp-route-id="@item.Id" class="icon-button danger-action" data-tooltip="Delete"><i class="pi pi-trash"></i></a></div><span class="row-chevron"><i class="pi pi-chevron-down"></i></span></article><section class="row-detail static-detail">                        <div><span>Rating</span><strong>@Html.DisplayFor(modelItem => item.Rating)</strong></div>
+                        <div><span>Active</span><strong>@Html.DisplayFor(modelItem => item.IsActive)</strong></div>
+                        <div><span>Deliveries</span><strong>@(item.Shippings?.Count ?? 0)</strong></div></section></div>
 }
-            </div>
-        }
-    </section>
-</section>
+    </div> }
+</section></section>

@@ -1,105 +1,111 @@
 @model DSM.Models.Order
-
 @{
     ViewData["Title"] = "Update Order";
+    var products = Model.Products?.ToList() ?? new List<DSM.Models.Product>();
 }
-
-<section class="workspace-grid">
+<section class="workspace-grid wide-form">
     <div class="form-backdrop inline-form-backdrop">
-        <form asp-action="Edit" class="workspace-form modal-form" novalidate>
+        <form asp-action="Edit" class="workspace-form modal-form wide-modal-form" novalidate>
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
             <div class="form-head">
-                <a asp-action="Index" class="icon-button" data-tooltip="Back" aria-label="Back">
-                    <i class="pi pi-arrow-left"></i>
-                </a>
-                <div>
-                    <h2>Update Order</h2>
-                    <p>Track orders, customers, suppliers and workflow status.</p>
+                <a asp-action="Index" class="icon-button" data-tooltip="Back" aria-label="Back"><i class="pi pi-arrow-left"></i></a>
+                <div><h2>Update Order</h2><p>Track orders, customers, suppliers and workflow status.</p></div>
+            </div>
+            <label><span>Customer</span><select asp-for="CustomerId" asp-items="ViewBag.Customers"><option value="">Select customer</option></select><span asp-validation-for="CustomerId" class="text-danger"></span></label>
+            <label><span>Supplier</span><select asp-for="SupplierId" asp-items="ViewBag.Suppliers"><option value="">Select supplier</option></select><span asp-validation-for="SupplierId" class="text-danger"></span></label>
+            <label><span>Remark</span><textarea asp-for="Remark"></textarea></label>
+
+            <div class="product-form" data-order-products>
+                <label><span>Product</span><select id="product-picker"><option value="">Select product</option>@foreach (var stock in ViewBag.StockProducts) { <option value="@stock.ProductName" data-ref="@stock.ProductRef" data-available="@stock.Quantity">@stock.ProductName - @stock.Quantity available</option> }</select></label>
+                <label><span>Reference</span><input id="product-ref" type="text" readonly placeholder="Selected product reference" /></label>
+                <label><span>Qty</span><input id="product-qty" type="number" min="1" value="1" /></label>
+                <label><span>Price</span><input id="product-price" type="number" min="0" step="0.01" value="0" /></label>
+                <button class="secondary-button" type="button" data-add-product>Add product</button>
+            </div>
+            <p class="stock-hint" data-stock-hint></p>
+            <div class="product-lines" data-product-lines>
+@for (int i = 0; i < products.Count; i++) {
+                <div class="product-line" data-product-line>
+                    <span>@products[i].ProductName - @products[i].Quantity x @products[i].PricePerUnit.ToString("0.00")</span>
+                    <input type="hidden" name="Products[@i].ProductName" value="@products[i].ProductName" />
+                    <input type="hidden" name="Products[@i].ProductRef" value="@products[i].ProductRef" />
+                    <input type="hidden" name="Products[@i].Quantity" value="@products[i].Quantity" />
+                    <input type="hidden" name="Products[@i].PricePerUnit" value="@products[i].PricePerUnit" />
+                    <button type="button" data-remove-product>Remove</button>
                 </div>
+}
             </div>
-
-                        <input type="hidden" asp-for="Id" />
-
-                        <label>
-                            <span>@Html.DisplayNameFor(model => model.CustomerId)</span>
-                            <input asp-for="CustomerId" type="number" step="any" placeholder="Enter customerid" />
-                            <span asp-validation-for="CustomerId" class="text-danger"></span>
-                        </label>
-
-                        <label>
-                            <span>@Html.DisplayNameFor(model => model.SupplierId)</span>
-                            <input asp-for="SupplierId" type="number" step="any" placeholder="Enter supplierid" />
-                            <span asp-validation-for="SupplierId" class="text-danger"></span>
-                        </label>
-
-                        <label>
-                            <span>@Html.DisplayNameFor(model => model.OrderDate)</span>
-                            <input asp-for="OrderDate" placeholder="Enter orderdate" />
-                            <span asp-validation-for="OrderDate" class="text-danger"></span>
-                        </label>
-
-                        <label>
-                            <span>@Html.DisplayNameFor(model => model.Status)</span>
-                            <input asp-for="Status" placeholder="Enter status" />
-                            <span asp-validation-for="Status" class="text-danger"></span>
-                        </label>
-
-                        <label>
-                            <span>@Html.DisplayNameFor(model => model.TotalAmount)</span>
-                            <input asp-for="TotalAmount" type="number" step="any" placeholder="Enter totalamount" />
-                            <span asp-validation-for="TotalAmount" class="text-danger"></span>
-                        </label>
-
-                        <label>
-                            <span>@Html.DisplayNameFor(model => model.OrderNumber)</span>
-                            <input asp-for="OrderNumber" placeholder="Enter ordernumber" />
-                            <span asp-validation-for="OrderNumber" class="text-danger"></span>
-                        </label>
-
-                        <label>
-                            <span>@Html.DisplayNameFor(model => model.Remark)</span>
-                            <textarea asp-for="Remark" placeholder="Enter remark"></textarea>
-                            <span asp-validation-for="Remark" class="text-danger"></span>
-                        </label>
-
-                        <label>
-                            <span>@Html.DisplayNameFor(model => model.Products)</span>
-                            <input asp-for="Products" placeholder="Enter products" />
-                            <span asp-validation-for="Products" class="text-danger"></span>
-                        </label>
-
-                        <label>
-                            <span>@Html.DisplayNameFor(model => model.ShippingIds)</span>
-                            <input asp-for="ShippingIds" placeholder="Enter shippingids" />
-                            <span asp-validation-for="ShippingIds" class="text-danger"></span>
-                        </label>
-
-                        <label>
-                            <span>@Html.DisplayNameFor(model => model.InvoiceIds)</span>
-                            <input asp-for="InvoiceIds" placeholder="Enter invoiceids" />
-                            <span asp-validation-for="InvoiceIds" class="text-danger"></span>
-                        </label>
-
-                        <label>
-                            <span>@Html.DisplayNameFor(model => model.CreatedAt)</span>
-                            <input asp-for="CreatedAt" placeholder="Enter createdat" />
-                            <span asp-validation-for="CreatedAt" class="text-danger"></span>
-                        </label>
-
-                        <label>
-                            <span>@Html.DisplayNameFor(model => model.UpdatedAt)</span>
-                            <input asp-for="UpdatedAt" placeholder="Enter updatedat" />
-                            <span asp-validation-for="UpdatedAt" class="text-danger"></span>
-                        </label>
-
-            <div class="form-actions">
-                <a asp-action="Index" class="secondary-button">Cancel</a>
-                <button type="submit" class="primary-button">Save</button>
-            </div>
+            <div class="form-actions"><a asp-action="Index" class="secondary-button">Cancel</a><button type="submit" class="primary-button">Update</button></div>
         </form>
     </div>
 </section>
-
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        (function () {
+            const picker = document.getElementById('product-picker');
+            const qty = document.getElementById('product-qty');
+            const reference = document.getElementById('product-ref');
+            const price = document.getElementById('product-price');
+            const lines = document.querySelector('[data-product-lines]');
+            const hint = document.querySelector('[data-stock-hint]');
+            const add = document.querySelector('[data-add-product]');
+            function refreshIndexes() {
+                lines.querySelectorAll('[data-product-line]').forEach(function (line, index) {
+                    line.querySelectorAll('input').forEach(function (input) {
+                        input.name = input.name.replace(/Products\[\d+\]/, 'Products[' + index + ']');
+                    });
+                });
+            }
+            function updateHint() {
+                const option = picker.options[picker.selectedIndex];
+                const available = option ? option.getAttribute('data-available') : '';
+                hint.textContent = picker.value ? 'Available stock: ' + available : '';
+                if (reference) {
+                    reference.value = picker.value ? ((option && option.getAttribute('data-ref')) || '') : '';
+                }
+            }
+            picker.addEventListener('change', updateHint);
+            add.addEventListener('click', function () {
+                const option = picker.options[picker.selectedIndex];
+                const productName = picker.value;
+                const quantity = parseInt(qty.value || '0', 10);
+                const unitPrice = parseFloat(price.value || '0');
+                const available = parseInt((option && option.getAttribute('data-available')) || '0', 10);
+                const ref = (option && option.getAttribute('data-ref')) || '';
+                if (!productName || quantity < 1 || unitPrice <= 0 || quantity > available) {
+                    alert('Select a product from stock, enter a valid quantity, and set a positive price.');
+                    return;
+                }
+                const index = lines.querySelectorAll('[data-product-line]').length;
+                const escapedProductName = productName.replace(/"/g, '&quot;');
+                const escapedRef = ref.replace(/"/g, '&quot;');
+                const row = document.createElement('div');
+                row.className = 'product-line';
+                row.setAttribute('data-product-line', '');
+                row.innerHTML = '<span>' + productName + ' - ' + quantity + ' x ' + unitPrice.toFixed(2) + '</span>' +
+                    '<input type="hidden" name="Products[' + index + '].ProductName" value="' + escapedProductName + '" />' +
+                    '<input type="hidden" name="Products[' + index + '].ProductRef" value="' + escapedRef + '" />' +
+                    '<input type="hidden" name="Products[' + index + '].Quantity" value="' + quantity + '" />' +
+                    '<input type="hidden" name="Products[' + index + '].PricePerUnit" value="' + unitPrice + '" />' +
+                    '<button type="button" data-remove-product>Remove</button>';
+                lines.appendChild(row);
+                picker.value = '';
+                qty.value = '1';
+                price.value = '0';
+                if (reference) {
+                    reference.value = '';
+                }
+                updateHint();
+            });
+            document.addEventListener('click', function (event) {
+                const button = event.target.closest('[data-remove-product]');
+                if (!button) return;
+                button.closest('[data-product-line]').remove();
+                refreshIndexes();
+            });
+            updateHint();
+        })();
+    </script>
 }

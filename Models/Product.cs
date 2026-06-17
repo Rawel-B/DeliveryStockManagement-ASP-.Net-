@@ -11,7 +11,7 @@ namespace DSM.Models {
         public string ProductName { get; set; } = string.Empty;
         public string? ProductRef { get; set; }
         [Range(1, int.MaxValue, ErrorMessage = "cannot enter a quantity less than 1.")]
-        public int Quantity { get; set; }
+        public int Quantity { get; set; } = 1;
         [Range(0.01, double.MaxValue, ErrorMessage = "price per unit cannot be less than zero.")]
         [Column(TypeName = "decimal(18,2)")]
         public decimal PricePerUnit { get; set; }

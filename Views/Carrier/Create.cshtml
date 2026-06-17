@@ -9,57 +9,35 @@
         <form asp-action="Create" class="workspace-form modal-form" novalidate>
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-head">
-                <a asp-action="Index" class="icon-button" data-tooltip="Back" aria-label="Back">
-                    <i class="pi pi-arrow-left"></i>
-                </a>
+                <a asp-action="Index" class="icon-button" data-tooltip="Back" aria-label="Back"><i class="pi pi-arrow-left"></i></a>
                 <div>
                     <h2>New Carrier</h2>
-                    <p>Manage delivery carriers, ratings and activity status.</p>
+                    <p>Create a new record.</p>
                 </div>
             </div>
 
-                        <label>
-                            <span>@Html.DisplayNameFor(model => model.Name)</span>
-                            <input asp-for="Name" placeholder="Enter name" />
-                            <span asp-validation-for="Name" class="text-danger"></span>
-                        </label>
+            <label>
+                <span>Name</span>
+                <input asp-for="Name" type="text" placeholder="Enter name" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </label>
 
-                        <label>
-                            <span>@Html.DisplayNameFor(model => model.Phone)</span>
-                            <input asp-for="Phone" placeholder="Enter phone" />
-                            <span asp-validation-for="Phone" class="text-danger"></span>
-                        </label>
+            <label>
+                <span>Phone</span>
+                <input asp-for="Phone" type="text" placeholder="Enter phone" />
+                <span asp-validation-for="Phone" class="text-danger"></span>
+            </label>
 
-                        <label>
-                            <span>@Html.DisplayNameFor(model => model.Rating)</span>
-                            <input asp-for="Rating" type="number" step="any" placeholder="Enter rating" />
-                            <span asp-validation-for="Rating" class="text-danger"></span>
-                        </label>
+            <label>
+                <span>Rating</span>
+                <input asp-for="Rating" type="number" step="0.01" min="0" placeholder="Enter rating" />
+                <span asp-validation-for="Rating" class="text-danger"></span>
+            </label>
 
-                        <label class="active-toggle">
-                            <input asp-for="IsActive" />
-                            <span></span>
-                            <strong>@Html.DisplayNameFor(model => model.IsActive)</strong>
-                        </label>
-                        <span asp-validation-for="IsActive" class="text-danger"></span>
-
-                        <label>
-                            <span>@Html.DisplayNameFor(model => model.ShippingIds)</span>
-                            <input asp-for="ShippingIds" placeholder="Enter shippingids" />
-                            <span asp-validation-for="ShippingIds" class="text-danger"></span>
-                        </label>
-
-                        <label>
-                            <span>@Html.DisplayNameFor(model => model.CreatedAt)</span>
-                            <input asp-for="CreatedAt" placeholder="Enter createdat" />
-                            <span asp-validation-for="CreatedAt" class="text-danger"></span>
-                        </label>
-
-                        <label>
-                            <span>@Html.DisplayNameFor(model => model.UpdatedAt)</span>
-                            <input asp-for="UpdatedAt" placeholder="Enter updatedat" />
-                            <span asp-validation-for="UpdatedAt" class="text-danger"></span>
-                        </label>
+            <label class="toggle-line">
+                <input asp-for="IsActive" />
+                <span>Active</span>
+            </label>
 
             <div class="form-actions">
                 <a asp-action="Index" class="secondary-button">Cancel</a>

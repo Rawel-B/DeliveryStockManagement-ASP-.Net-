@@ -1,3 +1,6 @@
+@{
+    var authMessage = TempData["AuthMessage"]?.ToString();
+}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,7 +10,15 @@
     <link rel="stylesheet" href="~/css/dsm-auth.css" asp-append-version="true" />
 </head>
 <body>
+    @if (!string.IsNullOrWhiteSpace(authMessage)) {
+        <section class="auth-toast" role="status" data-dsm-toast>
+            <strong>Success</strong>
+            <p>@authMessage</p>
+        </section>
+    }
+
     @RenderBody()
+
     <script src="~/js/dsm-auth.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>

@@ -1,76 +1,15 @@
 @model DSM.Models.User
-
-@{
-    ViewData["Title"] = "Update User";
-}
-
-<section class="workspace-grid">
-    <div class="form-backdrop inline-form-backdrop">
-        <form asp-action="Edit" class="workspace-form modal-form" novalidate>
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-head">
-                <a asp-action="Index" class="icon-button" data-tooltip="Back" aria-label="Back">
-                    <i class="pi pi-arrow-left"></i>
-                </a>
-                <div>
-                    <h2>Update User</h2>
-                    <p>Manage workspace users, roles and access status.</p>
-                </div>
-            </div>
-
-                        <input type="hidden" asp-for="Id" />
-
-                        <label>
-                            <span>@Html.DisplayNameFor(model => model.Username)</span>
-                            <input asp-for="Username" placeholder="Enter username" />
-                            <span asp-validation-for="Username" class="text-danger"></span>
-                        </label>
-
-                        <label>
-                            <span>@Html.DisplayNameFor(model => model.Password)</span>
-                            <input asp-for="Password" type="password" placeholder="Enter password" />
-                            <span asp-validation-for="Password" class="text-danger"></span>
-                        </label>
-
-                        <label>
-                            <span>@Html.DisplayNameFor(model => model.Name)</span>
-                            <input asp-for="Name" placeholder="Enter name" />
-                            <span asp-validation-for="Name" class="text-danger"></span>
-                        </label>
-
-                        <label>
-                            <span>@Html.DisplayNameFor(model => model.Email)</span>
-                            <input asp-for="Email" type="email" placeholder="Enter email" />
-                            <span asp-validation-for="Email" class="text-danger"></span>
-                        </label>
-
-                        <label>
-                            <span>@Html.DisplayNameFor(model => model.Role)</span>
-                            <input asp-for="Role" placeholder="Enter role" />
-                            <span asp-validation-for="Role" class="text-danger"></span>
-                        </label>
-
-                        <label class="active-toggle">
-                            <input asp-for="IsActive" />
-                            <span></span>
-                            <strong>@Html.DisplayNameFor(model => model.IsActive)</strong>
-                        </label>
-                        <span asp-validation-for="IsActive" class="text-danger"></span>
-
-                        <label>
-                            <span>@Html.DisplayNameFor(model => model.CreatedAt)</span>
-                            <input asp-for="CreatedAt" placeholder="Enter createdat" />
-                            <span asp-validation-for="CreatedAt" class="text-danger"></span>
-                        </label>
-
-            <div class="form-actions">
-                <a asp-action="Index" class="secondary-button">Cancel</a>
-                <button type="submit" class="primary-button">Save</button>
-            </div>
-        </form>
-    </div>
-</section>
-
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
+@{ ViewData["Title"] = "Update User"; }
+<section class="workspace-grid"><div class="form-backdrop inline-form-backdrop"><form asp-action="Edit" class="workspace-form modal-form" novalidate>
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" asp-for="Id" />
+    <div class="form-head"><a asp-action="Index" class="icon-button" data-tooltip="Back" aria-label="Back"><i class="pi pi-arrow-left"></i></a><div><h2>Update User</h2><p>Manage users, roles and activation.</p></div></div>
+    <label><span>Username</span><input asp-for="Username" /></label>
+    <label><span>Name</span><input asp-for="Name" /></label>
+    <label><span>Email</span><input asp-for="Email" type="email" /></label>
+    <label><span>Role</span><select asp-for="Role" asp-items="Html.GetEnumSelectList<DSM.Models.Role>()"></select></label>
+    <label><span>Password</span><input asp-for="Password" type="password" placeholder="Leave empty to keep current password" /></label>
+    <label class="toggle-line"><input asp-for="IsActive" /><span>Active</span></label>
+    <div class="form-actions"><a asp-action="Index" class="secondary-button">Cancel</a><button type="submit" class="primary-button">Update</button></div>
+</form></div></section>
+@section Scripts { @{await Html.RenderPartialAsync("_ValidationScriptsPartial");} }

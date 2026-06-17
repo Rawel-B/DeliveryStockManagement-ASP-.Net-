@@ -141,7 +141,7 @@ public class OrderController : Controller {
             return NotFound();
         }
 
-        var order = await _context.Orders.Include(o => o.Customer).Include(o => o.Supplier).FirstOrDefaultAsync(m => m.Id == id);
+        var order = await _context.Orders.Include(o => o.Customer).Include(o => o.Supplier).Include(o => o.Products).FirstOrDefaultAsync(m => m.Id == id);
         if (order == null) {
             return NotFound();
         }
@@ -203,22 +203,49 @@ public class OrderController : Controller {
     private async Task LoadLookups() {
         ViewBag.Customers = new SelectList(await _context.Customers.OrderBy(c => c.Name).ToListAsync(), "Id", "Name");
         ViewBag.Suppliers = new SelectList(await _context.Suppliers.Where(s => s.IsActive).OrderBy(s => s.Name).ToListAsync(), "Id", "Name");
+
+        var stocks = await _context.Stocks
+            .AsNoTracking()
+            .Where(s => !string.IsNullOrWhiteSpace(s.Product) && s.Quantity > 0)
+            .ToListAsync();
+
+        var reserved = await ReservedProductsAsync();
+
+        ViewBag.StockProducts = stocks
+            .GroupBy(s => ProductStockKey(s.Product, s.ProductRef))
+            .Select(group => new {
+                ProductName = group.First().Product,
+                ProductRef = group.Select(s => s.ProductRef).FirstOrDefault(reference => !string.IsNullOrWhiteSpace(reference)),
+                Quantity = Math.Max(group.Sum(s => s.Quantity) - reserved.GetValueOrDefault(group.Key), 0)
+            })
+            .Where(item => item.Quantity > 0)
+            .OrderBy(item => item.ProductName)
+            .ThenBy(item => item.ProductRef)
+            .ToList();
     }
 
     private async Task ValidateOrderRequest(Order order, int? ignoredOrderId) {
         if (!await _context.Customers.AnyAsync(c => c.Id == order.CustomerId)) {
             ModelState.AddModelError(nameof(order.CustomerId), "Customer With " + order.CustomerId + " Was Not Found.");
         }
+
         if (order.SupplierId == null || !await _context.Suppliers.AnyAsync(s => s.Id == order.SupplierId && s.IsActive)) {
             ModelState.AddModelError(nameof(order.SupplierId), "Supplier Must Be Specified.");
         }
+
         var products = CleanProducts(order.Products);
+
         if (!products.Any()) {
             ModelState.AddModelError(nameof(order.Products), "At Least One Product Must Be Added.");
             return;
         }
+
         var available = await AvailableStockByProduct(ignoredOrderId);
-        var requested = products.GroupBy(p => DsmControllerUtilities.ProductKey(p.ProductName)).ToDictionary(g => g.Key, g => g.Sum(p => p.Quantity));
+
+        var requested = products
+            .GroupBy(p => ProductStockKey(p.ProductName, p.ProductRef))
+            .ToDictionary(g => g.Key, g => g.Sum(p => p.Quantity));
+
         foreach (var item in requested) {
             if (available.GetValueOrDefault(item.Key) < item.Value) {
                 ModelState.AddModelError(nameof(order.Products), "Requested Quantity Exceeds Available Stock.");
@@ -228,27 +255,65 @@ public class OrderController : Controller {
     }
 
     private List<Product> CleanProducts(List<Product>? products) {
-        return (products ?? new List<Product>()).Where(p => !string.IsNullOrWhiteSpace(p.ProductName)).Select(p => {
-            p.ProductName = DsmControllerUtilities.Clean(p.ProductName);
-            p.ProductRef = DsmControllerUtilities.CleanNullable(p.ProductRef);
-            p.Quantity = Math.Max(1, p.Quantity);
-            p.CalculateSubTotal();
-            return p;
-        }).ToList();
+        return (products ?? new List<Product>())
+            .Where(p => !string.IsNullOrWhiteSpace(p.ProductName))
+            .Select(p => {
+                p.ProductName = DsmControllerUtilities.Clean(p.ProductName);
+                p.ProductRef = DsmControllerUtilities.CleanNullable(p.ProductRef);
+                p.Quantity = Math.Max(1, p.Quantity);
+                p.CalculateSubTotal();
+                return p;
+            })
+            .ToList();
     }
 
-    private async Task<Dictionary<string, int>> AvailableStockByProduct(int? ignoredOrderId) {
-        var stocks = await _context.Stocks.AsNoTracking().ToListAsync();
-        var totals = stocks.Where(s => !string.IsNullOrWhiteSpace(s.Product)).GroupBy(s => DsmControllerUtilities.ProductKey(s.Product)).ToDictionary(g => g.Key, g => g.Sum(s => s.Quantity));
-        var reservedQuery = _context.Orders.Include(o => o.Products).Where(o => o.Status == OrderStatus.pendingApproval || o.Status == OrderStatus.validated || o.Status == OrderStatus.ongoing);
+    private async Task<Dictionary<string, int>> ReservedProductsAsync(int? ignoredOrderId = null) {
+        var reservedQuery = _context.Orders
+            .Where(o =>
+                o.Status == OrderStatus.pendingApproval ||
+                o.Status == OrderStatus.validated ||
+                o.Status == OrderStatus.ongoing);
+
         if (ignoredOrderId != null) {
             reservedQuery = reservedQuery.Where(o => o.Id != ignoredOrderId);
         }
-        var reserved = await reservedQuery.SelectMany(o => o.Products).Where(p => !string.IsNullOrWhiteSpace(p.ProductName)).GroupBy(p => p.ProductName.Trim().ToLower()).ToDictionaryAsync(g => g.Key, g => g.Sum(p => p.Quantity));
+
+        var reservedProducts = await reservedQuery
+            .SelectMany(o => o.Products)
+            .Where(p => !string.IsNullOrWhiteSpace(p.ProductName))
+            .Select(p => new {
+                p.ProductName,
+                p.ProductRef,
+                p.Quantity
+            })
+            .ToListAsync();
+
+        return reservedProducts
+            .GroupBy(p => ProductStockKey(p.ProductName, p.ProductRef))
+            .ToDictionary(g => g.Key, g => g.Sum(p => p.Quantity));
+    }
+
+    private async Task<Dictionary<string, int>> AvailableStockByProduct(int? ignoredOrderId) {
+        var stocks = await _context.Stocks
+            .AsNoTracking()
+            .Where(s => !string.IsNullOrWhiteSpace(s.Product))
+            .ToListAsync();
+
+        var totals = stocks
+            .GroupBy(s => ProductStockKey(s.Product, s.ProductRef))
+            .ToDictionary(g => g.Key, g => g.Sum(s => s.Quantity));
+
+        var reserved = await ReservedProductsAsync(ignoredOrderId);
+
         foreach (var item in reserved) {
             totals[item.Key] = totals.GetValueOrDefault(item.Key) - item.Value;
         }
+
         return totals;
+    }
+
+    private string ProductStockKey(string? productName, string? productRef) {
+        return DsmControllerUtilities.ProductKey(productName) + "|" + DsmControllerUtilities.Clean(productRef).ToLower();
     }
 
     private string? ValidateStatusChange(OrderStatus current, OrderStatus next) {

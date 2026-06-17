@@ -1,9 +1,15 @@
+@using System.Security.Claims
 @{
     var controller = (ViewContext.RouteData.Values["controller"]?.ToString() ?? "").ToLowerInvariant();
     string Active(string name) => controller == name.ToLowerInvariant() ? " active" : "";
-    var displayName = User.FindFirst("DisplayName")?.Value ?? User.Identity?.Name ?? "Profile";
-    var userRole = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value ?? "";
-    var userEmail = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value ?? "";
+    var displayName = User.FindFirst("DisplayName")?.Value ?? User.Identity?.Name ?? "User";
+    var role = User.FindFirst(ClaimTypes.Role)?.Value ?? "user";
+    var email = User.FindFirst(ClaimTypes.Email)?.Value ?? string.Empty;
+    var toastMessage = TempData["ToastMessage"]?.ToString()
+        ?? TempData["AuthMessage"]?.ToString()
+        ?? TempData["ProfileMessage"]?.ToString()
+        ?? TempData["Error"]?.ToString();
+    var toastType = TempData["ToastType"]?.ToString() ?? (TempData["Error"] != null ? "error" : "success");
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -17,7 +23,7 @@
     <main class="workspace-page">
         <aside class="workspace-sidebar">
             <div class="sidebar-brand">
-                <span class="brand-logo-text">DSM</span>
+                <img class="brand-logo sidebar-brand-logo" src="~/logo-mark.svg" alt="Delivery Stock Management" />
                 <span class="brand-separator"></span>
                 <div class="brand-copy">
                     <strong>Delivery Stock Management</strong>
@@ -35,68 +41,34 @@
                 <section class="nav-group">
                     <h2>Operations</h2>
                     <div>
-                        <a class="workspace-nav-link@(Active("Order"))" href="/Order">
-                            <i class="pi pi-shopping-cart"></i>
-                            <span>Orders</span>
-                        </a>
-                        <a class="workspace-nav-link@(Active("Shipping"))" href="/Shipping">
-                            <i class="pi pi-truck"></i>
-                            <span>Deliveries</span>
-                        </a>
-                        <a class="workspace-nav-link@(Active("Invoice"))" href="/Invoice">
-                            <i class="pi pi-file"></i>
-                            <span>Invoices</span>
-                        </a>
+                        <a class="workspace-nav-link@(Active("Order"))" href="/Order"><i class="pi pi-shopping-cart"></i><span>Orders</span></a>
+                        <a class="workspace-nav-link@(Active("Shipping"))" href="/Shipping"><i class="pi pi-truck"></i><span>Deliveries</span></a>
+                        <a class="workspace-nav-link@(Active("Invoice"))" href="/Invoice"><i class="pi pi-file"></i><span>Invoices</span></a>
                     </div>
                 </section>
 
                 <section class="nav-group">
                     <h2>Inventory</h2>
                     <div>
-                        <a class="workspace-nav-link@(Active("Stock"))" href="/Stock">
-                            <i class="pi pi-box"></i>
-                            <span>Stocks</span>
-                        </a>
-                        <a class="workspace-nav-link@(Active("Product"))" href="/Product">
-                            <i class="pi pi-tags"></i>
-                            <span>Products</span>
-                        </a>
-                        <a class="workspace-nav-link@(Active("Location"))" href="/Location">
-                            <i class="pi pi-map-marker"></i>
-                            <span>Locations</span>
-                        </a>
+                        <a class="workspace-nav-link@(Active("Stock"))" href="/Stock"><i class="pi pi-box"></i><span>Stocks</span></a>
+                        <a class="workspace-nav-link@(Active("Location"))" href="/Location"><i class="pi pi-map-marker"></i><span>Locations</span></a>
                     </div>
                 </section>
 
                 <section class="nav-group">
                     <h2>CRM</h2>
                     <div>
-                        <a class="workspace-nav-link@(Active("Customer"))" href="/Customer">
-                            <i class="pi pi-users"></i>
-                            <span>Customers</span>
-                        </a>
-                        <a class="workspace-nav-link@(Active("Supplier"))" href="/Supplier">
-                            <i class="pi pi-building"></i>
-                            <span>Suppliers</span>
-                        </a>
-                        <a class="workspace-nav-link@(Active("Carrier"))" href="/Carrier">
-                            <i class="pi pi-send"></i>
-                            <span>Carriers</span>
-                        </a>
+                        <a class="workspace-nav-link@(Active("Customer"))" href="/Customer"><i class="pi pi-users"></i><span>Customers</span></a>
+                        <a class="workspace-nav-link@(Active("Supplier"))" href="/Supplier"><i class="pi pi-building"></i><span>Suppliers</span></a>
+                        <a class="workspace-nav-link@(Active("Carrier"))" href="/Carrier"><i class="pi pi-send"></i><span>Carriers</span></a>
                     </div>
                 </section>
 
                 <section class="nav-group support-group">
                     <h2>Support</h2>
                     <div>
-                        <a class="workspace-nav-link@(Active("User"))" href="/User">
-                            <i class="pi pi-lock"></i>
-                            <span>Users</span>
-                        </a>
-                        <a class="workspace-nav-link@(Active("SupportTicket"))" href="/SupportTicket">
-                            <i class="pi pi-ticket"></i>
-                            <span>Support</span>
-                        </a>
+                        <a class="workspace-nav-link@(Active("User"))" href="/User"><i class="pi pi-lock"></i><span>Users</span></a>
+                        <a class="workspace-nav-link@(Active("SupportTicket"))" href="/SupportTicket"><i class="pi pi-ticket"></i><span>Support</span></a>
                     </div>
                 </section>
             </nav>
@@ -108,35 +80,45 @@
                     <h1>@ViewData["Title"]</h1>
                 </div>
                 <div class="header-actions">
-                    @if (User.Identity?.IsAuthenticated == true) {
-                        <div class="account-menu">
-                            <a class="account-button" href="/Profile" aria-label="Open profile" data-tooltip="Profile">
-                                <i class="pi pi-user"></i>
-                            </a>
-                            <section class="account-dropdown" aria-label="Profile menu">
-                                <div class="account-dropdown-head">
-                                    <span class="profile-avatar small-profile-avatar"><i class="pi pi-user"></i></span>
-                                    <div>
-                                        <strong>@displayName</strong>
-                                        <span class="account-role">@userRole</span>
-                                        <small>@User.Identity.Name</small>
-                                        <small>@userEmail</small>
-                                    </div>
-                                </div>
-                                <a href="/Profile">
-                                    <i class="pi pi-user-edit"></i>
-                                    <span>Profile</span>
-                                </a>
-                            </section>
-                        </div>
-                        <a class="signout-button" href="/Auth/SignOut" aria-label="Sign out" data-tooltip="Sign out">
-                            <i class="pi pi-sign-out"></i>
+                    <div class="account-menu">
+                        <a class="account-button" href="/Profile" aria-label="Profile" data-tooltip="Profile">
+                            <i class="pi pi-user"></i>
                         </a>
-                    } else {
-                        <a class="primary-button compact-header-button" href="/Auth/SignIn">Sign in</a>
-                    }
+                        <section class="account-dropdown" aria-label="Profile menu">
+                            <div class="account-dropdown-head">
+                                <span class="profile-avatar small-profile-avatar"><i class="pi pi-user"></i></span>
+                                <div>
+                                    <strong>@displayName</strong>
+                                    <span class="account-role">@role</span>
+                                    <small>@User.Identity?.Name</small>
+                                    <small>@email</small>
+                                </div>
+                            </div>
+                            <a href="/Profile"><i class="pi pi-user-edit"></i><span>Profile</span></a>
+                        </section>
+                    </div>
+
+                    <form asp-controller="Auth" asp-action="SignOut" method="post" class="signout-form">
+                        @Html.AntiForgeryToken()
+                        <button class="signout-button" type="submit" aria-label="Sign out" data-tooltip="Sign out">
+                            <i class="pi pi-sign-out"></i>
+                        </button>
+                    </form>
                 </div>
             </header>
+
+            @if (!string.IsNullOrWhiteSpace(toastMessage)) {
+                <section class="workspace-toast @(toastType == "error" ? "error-toast" : "")" role="status" data-dsm-toast>
+                    <i class="@(toastType == "error" ? "pi pi-exclamation-triangle" : "pi pi-check")"></i>
+                    <div>
+                        <strong>@(toastType == "error" ? "Error" : "Success")</strong>
+                        <p>@toastMessage</p>
+                    </div>
+                    <button type="button" data-toast-dismiss aria-label="Dismiss notification">
+                        <i class="pi pi-times"></i>
+                    </button>
+                </section>
+            }
 
             @RenderBody()
         </section>

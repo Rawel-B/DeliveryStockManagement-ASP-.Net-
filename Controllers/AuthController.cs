@@ -19,8 +19,12 @@ namespace DSM.Controllers {
             _context = context;
         }
 
+        [HttpGet]
         [AllowAnonymous]
         public IActionResult SignIn(string? returnUrl = null) {
+            if (User.Identity?.IsAuthenticated == true) {
+                return RedirectToAction("Index", "Dashboard");
+            }
             ViewBag.ReturnUrl = returnUrl;
             return View(new SignInViewModel());
         }
@@ -31,28 +35,33 @@ namespace DSM.Controllers {
         public async Task<IActionResult> SignIn(SignInViewModel model, string? returnUrl = null) {
             ViewBag.ReturnUrl = returnUrl;
             if (!ModelState.IsValid) {
+                model.LoginFailed = false;
                 return View(model);
             }
 
             string username = model.Username.Trim();
             User? user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
             if (user == null || !VerifyPassword(user, model.Password)) {
+                model.LoginFailed = true;
                 ModelState.AddModelError(string.Empty, "Invalid username or password.");
                 return View(model);
             }
 
-            if (!user.IsActive) {
+            if (!IsActive(user)) {
+                model.LoginFailed = true;
                 ModelState.AddModelError(string.Empty, "Your account is waiting for administrator activation.");
                 return View(model);
             }
 
             await SignInUser(user, model.Remember);
+            SetToast("Signed in successfully.", "success");
             if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl)) {
                 return Redirect(returnUrl);
             }
             return RedirectToAction("Index", "Dashboard");
         }
 
+        [HttpGet]
         [AllowAnonymous]
         public IActionResult SignUp() {
             return View(new SignUpViewModel());
@@ -83,10 +92,10 @@ namespace DSM.Controllers {
                 Username = username,
                 Name = name,
                 Email = email,
-                Role = Role.user,
                 IsActive = false,
                 CreatedAt = DateTime.Now
             };
+            SetValue(user, "Role", "user");
             user.Password = _passwordHasher.HashPassword(user, model.Password);
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
@@ -96,16 +105,7 @@ namespace DSM.Controllers {
             return RedirectToAction(nameof(SignIn));
         }
 
-        [Authorize]
-        public async Task<IActionResult> Me() {
-            User? user = await CurrentUser();
-            if (user == null) {
-                return RedirectToAction(nameof(SignIn));
-            }
-            await SignInUser(user, true);
-            return RedirectToAction("Index", "Profile");
-        }
-
+        [HttpGet]
         [AllowAnonymous]
         public IActionResult ForgotPassword() {
             return View(new ForgotPasswordViewModel());
@@ -137,25 +137,33 @@ namespace DSM.Controllers {
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateSignInTicket(string? TicketEmail, string? TicketCategory, string? TicketDescription) {
+            SignInViewModel model = new() {
+                LoginFailed = true,
+                TicketEmail = TicketEmail,
+                TicketCategory = string.IsNullOrWhiteSpace(TicketCategory) ? "access" : TicketCategory,
+                TicketDescription = TicketDescription
+            };
+
             if (string.IsNullOrWhiteSpace(TicketDescription) || TicketDescription.Trim().Length < 10) {
-                TempData["TicketMessage"] = "Write at least 10 characters.";
-                return RedirectToAction(nameof(SignIn));
+                model.TicketMessage = "Write at least 10 characters.";
+                return View(nameof(SignIn), model);
             }
 
             SupportTicket ticket = new() {
                 Subject = "Sign In Access",
                 Description = TicketDescription.Trim(),
-                Category = ParseEnum(TicketCategory, Category.access),
-                Priority = Priority.high,
-                Status = Status.open,
                 RequesterEmail = TicketEmail?.Trim().ToLowerInvariant(),
                 RequesterName = "Access request",
                 CreatedAt = DateTime.Now
             };
+            SetValue(ticket, "Category", model.TicketCategory);
+            SetValue(ticket, "Priority", "high");
+            SetValue(ticket, "Status", "open");
             _context.SupportTickets.Add(ticket);
             await _context.SaveChangesAsync();
-            TempData["TicketMessage"] = "Ticket sent.";
-            return RedirectToAction(nameof(SignIn));
+
+            model.TicketMessage = "Ticket sent.";
+            return View(nameof(SignIn), model);
         }
 
         [HttpPost]
@@ -170,28 +178,34 @@ namespace DSM.Controllers {
             SupportTicket ticket = new() {
                 Subject = "Password Access",
                 Description = model.TicketDescription.Trim(),
-                Category = ParseEnum(model.TicketCategory, Category.access),
-                Priority = Priority.high,
-                Status = Status.open,
                 RequesterEmail = model.TicketEmail?.Trim().ToLowerInvariant(),
                 RequesterName = "Access request",
                 CreatedAt = DateTime.Now
             };
+            SetValue(ticket, "Category", string.IsNullOrWhiteSpace(model.TicketCategory) ? "access" : model.TicketCategory);
+            SetValue(ticket, "Priority", "high");
+            SetValue(ticket, "Status", "open");
             _context.SupportTickets.Add(ticket);
             await _context.SaveChangesAsync();
             model.TicketMessage = "Ticket sent.";
             return View(nameof(ForgotPassword), model);
         }
 
+        [HttpPost]
         [Authorize]
-        public async Task<IActionResult> SignOutUser() {
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SignOut() {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            TempData["AuthMessage"] = "Signed out.";
             return RedirectToAction(nameof(SignIn));
         }
 
-        private async Task<User?> CurrentUser() {
-            string username = User.Identity?.Name ?? string.Empty;
-            return await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> SignOutUser() {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            TempData["AuthMessage"] = "Signed out.";
+            return RedirectToAction(nameof(SignIn));
         }
 
         private bool VerifyPassword(User user, string password) {
@@ -205,14 +219,19 @@ namespace DSM.Controllers {
             return user.Password == password;
         }
 
+        private bool IsActive(User user) {
+            object? value = GetValue(user, "IsActive");
+            return value is bool b ? b : value == null || bool.TryParse(value.ToString(), out bool parsed) && parsed;
+        }
+
         private async Task SignInUser(User user, bool remember) {
             var claims = new List<Claim> {
-                new(ClaimTypes.NameIdentifier, user.Id.ToString(CultureInfo.InvariantCulture)),
+                new(ClaimTypes.NameIdentifier, GetValue(user, "Id")?.ToString() ?? string.Empty),
                 new(ClaimTypes.Name, user.Username ?? string.Empty),
                 new("DisplayName", user.Name ?? user.Username ?? string.Empty),
                 new(ClaimTypes.Email, user.Email ?? string.Empty),
-                new(ClaimTypes.Role, user.Role.ToString()),
-                new("IsActive", user.IsActive.ToString())
+                new(ClaimTypes.Role, GetValue(user, "Role")?.ToString() ?? "user"),
+                new("IsActive", IsActive(user).ToString())
             };
             ClaimsIdentity identity = new(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity), new AuthenticationProperties {
@@ -225,20 +244,50 @@ namespace DSM.Controllers {
             SupportTicket ticket = new() {
                 Subject = "Account Activation",
                 Description = "Activate user account: " + user.Username,
-                Category = Category.accountActivation,
-                Priority = Priority.high,
-                Status = Status.open,
-                RequesterId = user.Id,
                 RequesterName = user.Name,
                 RequesterEmail = user.Email,
                 CreatedAt = DateTime.Now
             };
+            SetValue(ticket, "Category", "accountActivation");
+            SetValue(ticket, "Priority", "high");
+            SetValue(ticket, "Status", "open");
+            SetValue(ticket, "RequesterId", GetValue(user, "Id"));
             _context.SupportTickets.Add(ticket);
             await _context.SaveChangesAsync();
         }
 
-        private static TEnum ParseEnum<TEnum>(string? value, TEnum fallback) where TEnum : struct {
-            return Enum.TryParse(value, true, out TEnum parsed) ? parsed : fallback;
+        private void SetToast(string message, string type) {
+            TempData["ToastMessage"] = message;
+            TempData["ToastType"] = type;
+        }
+
+        private static object? GetValue(object target, string propertyName) {
+            return target.GetType().GetProperty(propertyName)?.GetValue(target);
+        }
+
+        private static void SetValue(object target, string propertyName, object? value) {
+            var property = target.GetType().GetProperty(propertyName);
+            if (property == null || !property.CanWrite) {
+                return;
+            }
+            Type targetType = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
+            if (value == null) {
+                property.SetValue(target, null);
+                return;
+            }
+            if (targetType.IsEnum) {
+                property.SetValue(target, Enum.Parse(targetType, value.ToString() ?? string.Empty, true));
+                return;
+            }
+            if (targetType == typeof(string)) {
+                property.SetValue(target, value.ToString());
+                return;
+            }
+            if (targetType == typeof(DateTime) && value is DateTime dateTime) {
+                property.SetValue(target, dateTime);
+                return;
+            }
+            property.SetValue(target, Convert.ChangeType(value, targetType, CultureInfo.InvariantCulture));
         }
     }
 }

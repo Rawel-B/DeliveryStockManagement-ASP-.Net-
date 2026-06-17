@@ -2,7 +2,8 @@
 @{
     ViewData["Title"] = "Sign in";
     Layout = "_AuthLayout";
-    var hasErrors = !ViewData.ModelState.IsValid;
+    var showAccessTicket = Model.LoginFailed || !string.IsNullOrWhiteSpace(Model.TicketMessage);
+    var ticketFormClass = showAccessTicket ? "auth-form access-ticket-form" : "auth-form access-ticket-form hidden";
 }
 
 <main class="auth-page signin-page">
@@ -35,6 +36,10 @@
             <h2>Sign in</h2>
         </div>
 
+        @if (TempData["AuthMessage"] != null) {
+            <p class="form-success">@TempData["AuthMessage"]</p>
+        }
+
         <form asp-action="SignIn" asp-route-returnUrl="@ViewBag.ReturnUrl" method="post" class="auth-form" novalidate>
             <label>
                 <span>Username</span>
@@ -57,10 +62,8 @@
             </div>
 
             <div asp-validation-summary="ModelOnly" class="form-error"></div>
-            @if (TempData["AuthMessage"] != null) {
-                <p class="form-success">@TempData["AuthMessage"]</p>
-            }
-            @if (hasErrors) {
+
+            @if (Model.LoginFailed) {
                 <button class="secondary-button" type="button" data-auth-ticket-toggle>
                     Open access ticket
                 </button>
@@ -69,25 +72,31 @@
             <button class="primary-button" type="submit">Sign in</button>
         </form>
 
-        <form asp-action="CreateSignInTicket" method="post" class="auth-form access-ticket-form" data-auth-ticket-form hidden novalidate>
+        <form asp-action="CreateSignInTicket" method="post" class="@ticketFormClass" data-auth-ticket-form novalidate>
             <label>
                 <span>Email</span>
-                <input name="TicketEmail" type="email" autocomplete="email" />
+                <input asp-for="TicketEmail" type="email" autocomplete="email" />
             </label>
+            <span asp-validation-for="TicketEmail" class="field-error"></span>
+
             <label>
                 <span>Type</span>
-                <select name="TicketCategory">
+                <select asp-for="TicketCategory">
                     <option value="access">Access</option>
                     <option value="accountActivation">Account Activation</option>
                 </select>
             </label>
+
             <label>
                 <span>Issue</span>
-                <textarea name="TicketDescription"></textarea>
+                <textarea asp-for="TicketDescription"></textarea>
             </label>
-            @if (TempData["TicketMessage"] != null) {
-                <p class="form-success">@TempData["TicketMessage"]</p>
+            <span asp-validation-for="TicketDescription" class="field-error"></span>
+
+            @if (!string.IsNullOrWhiteSpace(Model.TicketMessage)) {
+                <p class="form-success">@Model.TicketMessage</p>
             }
+
             <button class="primary-button" type="submit">Send ticket</button>
         </form>
 

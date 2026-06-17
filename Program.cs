@@ -1,18 +1,23 @@
 using DSM.Data;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var connectionString = builder.Configuration.GetConnectionString("ApplicationDatabaseContext") ?? throw new InvalidOperationException("Connection string 'ApplicationDatabaseContext' not found.");
+var connectionString = builder.Configuration.GetConnectionString("ApplicationDatabaseContext")
+    ?? throw new InvalidOperationException("Connection string 'ApplicationDatabaseContext' not found.");
 
 builder.Services.AddDbContext<ApplicationDatabaseContext>(options =>
     options.UseSqlServer(connectionString));
 
 builder.Services.AddRazorPages();
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(options => {
+    options.Filters.Add(new AuthorizeFilter());
+});
 
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options => {
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options => {
         options.LoginPath = "/Auth/SignIn";
         options.AccessDeniedPath = "/Auth/SignIn";
         options.ExpireTimeSpan = TimeSpan.FromHours(8);
@@ -38,8 +43,8 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-//app.MapRazorPages();
-
-app.MapControllerRoute(name: "default", pattern: "{controller=Dashboard}/{action=Index}/{id?}");
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Dashboard}/{action=Index}/{id?}");
 
 app.Run();

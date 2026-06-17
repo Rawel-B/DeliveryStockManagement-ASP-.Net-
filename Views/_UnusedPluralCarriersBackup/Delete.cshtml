@@ -1,0 +1,43 @@
+@model DSM.Models.Carrier
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+@* Generated scaffolded Delete view kept and restyled to mirror the original Angular confirmation/details cards. *@
+<section class="workspace-grid">
+    <article class="confirm-toast details-toast">
+        <span>Delete confirmation</span>
+        <h2>Delete Carrier</h2>
+        <p class="delete-warning">This action will remove the selected record from the database.</p>
+
+        <section class="row-detail static-detail">
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.Name)</span>
+                    <strong>@Html.DisplayFor(model => model.Name)</strong>
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.Phone)</span>
+                    <strong>@Html.DisplayFor(model => model.Phone)</strong>
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.Rating)</span>
+                    <strong>@Html.DisplayFor(model => model.Rating)</strong>
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.IsActive)</span>
+                    <strong>@Html.DisplayFor(model => model.IsActive)</strong>
+                </div>
+                <div>
+                    <span>@Html.DisplayNameFor(model => model.ShippingIds)</span>
+                    <strong>@Html.DisplayFor(model => model.ShippingIds)</strong>
+                </div>
+        </section>
+
+            <form asp-action="Delete" class="form-actions">
+                <input type="hidden" asp-for="Id" />
+                <button type="submit" class="primary-button danger-submit">Delete</button>
+                <a asp-action="Index" class="secondary-button">Back to List</a>
+            </form>
+    </article>
+</section>
