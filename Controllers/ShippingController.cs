@@ -15,6 +15,8 @@ public class ShippingController : Controller {
 
     // GET: SHIPPINGS
     public async Task<IActionResult> Index(ShippingStatus? status) {
+        await RepairLegacyShippingRows();
+
         var shippings = _context.Shippings.Include(s => s.Order).Include(s => s.Carrier).AsQueryable();
         if (status != null) {
             shippings = shippings.Where(s => s.Status == status);
@@ -29,6 +31,8 @@ public class ShippingController : Controller {
 
     // GET: SHIPPINGS/Details/5
     public async Task<IActionResult> Details(int? id) {
+        await RepairLegacyShippingRows();
+
         if (id == null) {
             return NotFound();
         }
@@ -43,8 +47,9 @@ public class ShippingController : Controller {
 
     // GET: SHIPPINGS/Create
     public async Task<IActionResult> Create(int? orderId) {
+        await RepairLegacyShippingRows();
         await LoadLookups();
-        return View(new Shipping { OrderId = orderId ?? 0, DeliveryDate = DateTime.Now });
+        return View(new Shipping { OrderId = orderId ?? 0, DeliveryDate = DateTime.Now, ReceiptDate = DateTime.Now, Status = ShippingStatus.inPerparation });
     }
 
     // POST: SHIPPINGS/Create
@@ -80,6 +85,9 @@ public class ShippingController : Controller {
 
         if (ModelState.IsValid) {
             shipping.Status = ShippingStatus.inPerparation;
+            if (shipping.ReceiptDate == default) {
+                shipping.ReceiptDate = DateTime.Now;
+            }
             shipping.ShippingAddress = DsmControllerUtilities.Clean(shipping.ShippingAddress);
             shipping.TrackingNumber = DsmControllerUtilities.CleanNullable(shipping.TrackingNumber);
             shipping.Remark = DsmControllerUtilities.CleanNullable(shipping.Remark);
@@ -90,6 +98,8 @@ public class ShippingController : Controller {
                 DsmControllerUtilities.StampUpdate(order);
             }
             await _context.SaveChangesAsync();
+            TempData["ToastMessage"] = "Delivery created successfully.";
+            TempData["ToastType"] = "success";
             return RedirectToAction(nameof(Index));
         }
         await LoadLookups();
@@ -98,6 +108,8 @@ public class ShippingController : Controller {
 
     // GET: SHIPPINGS/Edit/5
     public async Task<IActionResult> Edit(int? id) {
+        await RepairLegacyShippingRows();
+
         if (id == null) {
             return NotFound();
         }
@@ -153,6 +165,12 @@ public class ShippingController : Controller {
             existing.ShippingAddress = DsmControllerUtilities.CleanNullable(shipping.ShippingAddress);
             existing.TrackingNumber = DsmControllerUtilities.CleanNullable(shipping.TrackingNumber);
             existing.Remark = DsmControllerUtilities.CleanNullable(shipping.Remark);
+            if (shipping.ReceiptDate != default) {
+                existing.ReceiptDate = shipping.ReceiptDate;
+            }
+            if (existing.ReceiptDate == default) {
+                existing.ReceiptDate = DateTime.Now;
+            }
             DsmControllerUtilities.StampUpdate(existing);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
@@ -163,6 +181,8 @@ public class ShippingController : Controller {
 
     // GET: SHIPPINGS/Delete/5
     public async Task<IActionResult> Delete(int? id) {
+        await RepairLegacyShippingRows();
+
         if (id == null) {
             return NotFound();
         }
@@ -178,6 +198,8 @@ public class ShippingController : Controller {
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int? id) {
+        await RepairLegacyShippingRows();
+
         var shipping = await _context.Shippings.FindAsync(id);
         if (shipping != null) {
             if (shipping.Status != ShippingStatus.inPerparation && shipping.Status != ShippingStatus.failed && shipping.Status != ShippingStatus.returned) {
@@ -193,6 +215,8 @@ public class ShippingController : Controller {
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> SetShippingStatus(int id, ShippingStatus status) {
+        await RepairLegacyShippingRows();
+
         var shipping = await _context.Shippings.FindAsync(id);
         if (shipping == null) {
             return NotFound();
@@ -242,21 +266,40 @@ public class ShippingController : Controller {
     }
 
     private async Task DeductOrder(Order order) {
-        var requested = order.Products.Where(p => !string.IsNullOrWhiteSpace(p.ProductName)).GroupBy(p => DsmControllerUtilities.ProductKey(p.ProductName)).ToDictionary(g => g.Key, g => g.Sum(p => p.Quantity));
+        await RepairLegacyStockRows();
+
+        var requested = order.Products
+            .Where(p => !string.IsNullOrWhiteSpace(p.ProductName))
+            .GroupBy(p => ProductStockKey(p.ProductName, p.ProductRef))
+            .ToDictionary(g => g.Key, g => g.Sum(p => p.Quantity));
+
         foreach (var item in requested) {
             await DeductProductFromStock(item.Key, item.Value);
         }
+
         var emptyStocks = await _context.Stocks.Where(s => s.Quantity <= 0).ToListAsync();
         _context.Stocks.RemoveRange(emptyStocks);
     }
 
-    private async Task DeductProductFromStock(string product, int quantity) {
+    private async Task DeductProductFromStock(string productKey, int quantity) {
+        await RepairLegacyStockRows();
+
         int remaining = quantity;
-        var stocks = await _context.Stocks.Where(s => s.Product.ToLower() == product).OrderBy(s => s.CreatedAt).ToListAsync();
+        var stocks = await _context.Stocks
+            .Where(s => !string.IsNullOrWhiteSpace(s.Product))
+            .OrderBy(s => s.CreatedAt)
+            .ToListAsync();
+
+        stocks = stocks
+            .Where(s => ProductStockKey(s.Product, s.ProductRef) == productKey)
+            .OrderBy(s => s.CreatedAt)
+            .ToList();
+
         int available = stocks.Sum(s => s.Quantity);
         if (available < quantity) {
             throw new InvalidOperationException("Requested Quantity Exceeds Available Stock.");
         }
+
         foreach (var stock in stocks) {
             if (remaining <= 0) break;
             int deductedQuantity = Math.Min(stock.Quantity, remaining);
@@ -264,6 +307,60 @@ public class ShippingController : Controller {
             DsmControllerUtilities.StampUpdate(stock);
             remaining -= deductedQuantity;
         }
+    }
+
+    private string ProductStockKey(string? productName, string? productRef) {
+        return DsmControllerUtilities.ProductKey(productName) + "|" + DsmControllerUtilities.Clean(productRef).ToLower();
+    }
+
+    private async Task RepairLegacyShippingRows() {
+        await _context.Database.ExecuteSqlRawAsync(@"
+IF OBJECT_ID(N'[dbo].[Shippings]', N'U') IS NOT NULL
+BEGIN
+    IF COL_LENGTH('dbo.Shippings', 'ReceiptDate') IS NOT NULL
+        EXEC(N'UPDATE [dbo].[Shippings] SET [ReceiptDate] = GETDATE() WHERE [ReceiptDate] IS NULL');
+
+    IF COL_LENGTH('dbo.Shippings', 'DeliveryDate') IS NOT NULL
+        EXEC(N'UPDATE [dbo].[Shippings] SET [DeliveryDate] = GETDATE() WHERE [DeliveryDate] IS NULL');
+
+    IF COL_LENGTH('dbo.Shippings', 'ShippingAddress') IS NOT NULL
+        EXEC(N'UPDATE [dbo].[Shippings] SET [ShippingAddress] = '''' WHERE [ShippingAddress] IS NULL');
+
+    IF COL_LENGTH('dbo.Shippings', 'Cost') IS NOT NULL
+        EXEC(N'UPDATE [dbo].[Shippings] SET [Cost] = 0 WHERE [Cost] IS NULL');
+
+    IF COL_LENGTH('dbo.Shippings', 'CreatedAt') IS NOT NULL
+        EXEC(N'UPDATE [dbo].[Shippings] SET [CreatedAt] = GETDATE() WHERE [CreatedAt] IS NULL');
+
+    IF COL_LENGTH('dbo.Shippings', 'UpdatedAt') IS NOT NULL
+        EXEC(N'UPDATE [dbo].[Shippings] SET [UpdatedAt] = GETDATE() WHERE [UpdatedAt] IS NULL');
+END
+");
+    }
+
+    private async Task RepairLegacyStockRows() {
+        await _context.Database.ExecuteSqlRawAsync(@"
+IF OBJECT_ID(N'[dbo].[Stocks]', N'U') IS NOT NULL
+BEGIN
+    IF COL_LENGTH('dbo.Stocks', 'Product') IS NOT NULL
+        EXEC(N'UPDATE [dbo].[Stocks] SET [Product] = '''' WHERE [Product] IS NULL');
+
+    IF COL_LENGTH('dbo.Stocks', 'ProductRef') IS NOT NULL
+        EXEC(N'UPDATE [dbo].[Stocks] SET [ProductRef] = '''' WHERE [ProductRef] IS NULL');
+
+    IF COL_LENGTH('dbo.Stocks', 'Quantity') IS NOT NULL
+        EXEC(N'UPDATE [dbo].[Stocks] SET [Quantity] = 0 WHERE [Quantity] IS NULL');
+
+    IF COL_LENGTH('dbo.Stocks', 'LastReceiptDate') IS NOT NULL
+        EXEC(N'UPDATE [dbo].[Stocks] SET [LastReceiptDate] = GETDATE() WHERE [LastReceiptDate] IS NULL');
+
+    IF COL_LENGTH('dbo.Stocks', 'CreatedAt') IS NOT NULL
+        EXEC(N'UPDATE [dbo].[Stocks] SET [CreatedAt] = GETDATE() WHERE [CreatedAt] IS NULL');
+
+    IF COL_LENGTH('dbo.Stocks', 'UpdatedAt') IS NOT NULL
+        EXEC(N'UPDATE [dbo].[Stocks] SET [UpdatedAt] = GETDATE() WHERE [UpdatedAt] IS NULL');
+END
+");
     }
 
     private bool ShippingExists(int? id) {

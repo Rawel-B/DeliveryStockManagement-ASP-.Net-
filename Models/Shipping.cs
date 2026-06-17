@@ -12,7 +12,7 @@ namespace DSM.Models {
         public Carrier? Carrier { get; set; }
         [Required(ErrorMessage = "delivery date must be specified.")]
         public DateTime? DeliveryDate { get; set; }
-        public DateTime? ReceiptDate { get; set; }
+        public DateTime ReceiptDate { get; set; } = DateTime.Now;
         [Range(0, double.MaxValue, ErrorMessage = "cost cannot be negative.")]
         [Column(TypeName = "decimal(18,2)")]
         public decimal Cost { get; set; } = 0m;

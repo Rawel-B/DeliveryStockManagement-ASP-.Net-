@@ -25,7 +25,7 @@
                 </div>
                 <div>
                     <span>@Html.DisplayNameFor(model => model.ReceiptDate)</span>
-                    <strong>@Html.DisplayFor(model => model.ReceiptDate)</strong>
+                    <strong>@(Model.Status == DSM.Models.ShippingStatus.delivered ? Model.ReceiptDate.ToString("g") : "—")</strong>
                 </div>
                 <div>
                     <span>@Html.DisplayNameFor(model => model.Cost)</span>

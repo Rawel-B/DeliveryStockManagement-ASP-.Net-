@@ -90,7 +90,7 @@
                             <div><span>Status</span><strong class="@DsmControllerUtilities.StatusPillClass(item.Status)">@DsmControllerUtilities.DisplayLabel(item.Status)</strong></div>
                             <div><span>Tracking</span><strong>@(item.TrackingNumber ?? "No tracking")</strong></div>
                             <div><span>Address</span><strong>@(item.ShippingAddress ?? "No address")</strong></div>
-                            <div><span>Receipt</span><strong>@item.ReceiptDate</strong></div>
+                            <div><span>Receipt</span><strong>@(item.Status == DSM.Models.ShippingStatus.delivered ? item.ReceiptDate.ToString("g") : "—")</strong></div>
                             <div><span>Remark</span><strong>@(item.Remark ?? "No remark")</strong></div>
                         </section>
                     </div>
